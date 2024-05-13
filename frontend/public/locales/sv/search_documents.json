@@ -1,0 +1,27 @@
+{
+	"title": "Sök dokument",
+	"description": "Här kan du söka efter dokument som är knutna till ett personnummer",
+	"search": "Sök", 
+	"ongoing_search": "Söker",
+	"include_confidential": "Inkludera sekretessbelagda dokument i sökningen",
+	"no_matching_documents": "Inga matchande dokument hittades",
+	"matching_documents": "dokument matchar personnummer",
+	"displaying_page": "visar sida",
+	"of": "av",
+	"errors": {
+		"invalidLegalId": "Du har inte angivit ett korrekt personnummer (giltigt format är YYYYMMDDNNNN eller YYYYMMDD-NNNN)",
+		"legalIdNotTranslatable": "Angivet personnummer kan inte översättas till motsvarande partyId"
+	},
+  	"searchtable_headers": {
+	  	"municipality": "Kommun",
+	  	"diarynumber": "Dokument-nummer",
+	  	"revision": "Revision",
+	  	"confidentiality": "Känslighet",
+	  	"created": "Skapat",
+	  	"created_by": "Skapat av"
+  	},
+	"document_table_title": "Dokument som mathcar sökning",
+  	"confidential": "Konfidentiellt",
+  	"public": "Publikt",
+  	"download_document": "Hämta dokument"
+}
