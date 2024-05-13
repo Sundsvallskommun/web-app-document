@@ -93,23 +93,23 @@ export const SearchDocumentPage: React.FC = () => {
 	};
 
 	const getPagedDocuments = (page: number) => {
-		setIsLoading(true);
-		findDocuments(partyId, isIncludeConfidential, page, 10, { registrationNumber: 'desc' })
-			.then((res) => {
-				setDocuments(res.documents);
-				setPaginationData({
-					page: res.page,
-					size: res.size,
-					totalPages: res.totalPages,
-					totalElements: res.totalElements,
-				});
-			})
-			.then(() => setIsLoading(false))
-			.catch((e) => {
-				console.error('Error when loading matching documents:', e);
-				setIsLoading(false);
+		translateLegalId(legalId.replace('-', ''))
+			.then((response: ApiPartyData) => {
+				findDocuments(response.partyId, isIncludeConfidential, page, 10, { registrationNumber: 'desc' })
+					.then((res) => {
+						setDocuments(res.documents);
+						setPaginationData({
+							page: res.page,
+							size: res.size,
+							totalPages: res.totalPages,
+							totalElements: res.totalElements,
+						});
+					})
+					.catch((e) => {
+						console.error('Error when loading matching documents:', e);
+						setIsLoading(false);
+					});
 			});
-		;
 	};
 
 	const labels = [
