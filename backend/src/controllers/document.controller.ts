@@ -14,21 +14,14 @@ export class DocumentController {
     @QueryParam('includeConfidential') includeConfidential: boolean,
     @QueryParam('page') page: number,
     @QueryParam('size') size: number,
-    @QueryParam('sort') sort: string,
   ) {
-    let url = `document/2.0/documents?query=${query || 'joa02sch'}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${
-      size || 10
-    }`;
-
-    if (sort) {
-      url += `&sort=${sort}`;
-    }
+    let url = `document/2.0/documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}`;
+    url += `&sort=registrationNumber,desc&sort=revision,desc`;
 
     const res = await this.apiService.get<{ status: string }>({ url }).catch(e => {
       logger.error('Error when retrieving documents matching search parameter:', e);
       return e;
     });
-
     return res.data;
   }
 }

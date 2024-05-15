@@ -2,6 +2,7 @@ import { HttpException } from '@/exceptions/HttpException';
 import { apiURL } from '@/utils/util';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ApiTokenService from './api-token.service';
+import { logger } from '@/utils/logger';
 
 class ApiResponse<T> {
   data: T;
@@ -30,6 +31,7 @@ class ApiService {
       const res = await axios(preparedConfig);
       return { data: res.data, message: 'success' };
     } catch (error: unknown | AxiosError) {
+      logger.error(JSON.stringify(error.response?.data));
       if (axios.isAxiosError(error) && (error as AxiosError).response?.status === 404) {
         throw new HttpException(404, 'Not found');
       }

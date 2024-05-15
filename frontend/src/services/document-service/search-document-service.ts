@@ -60,18 +60,14 @@ export const findDocuments: (
 	includeConfidential: boolean,
 	page?: number,
 	size?: number,
-	sort?: { [key: string]: 'asc' | 'desc' }
-) => Promise<DocumentSearchResult> = (partyId, includeConfidential, page = 0, size = 10, sort = { created: 'desc' }) => {
+) => Promise<DocumentSearchResult> = (partyId, includeConfidential, page = 0, size = 10) => {
 	if (!partyId) {
 		return Promise
 			.reject(new Error('PartyID missing'));
 	}
 
-	let url = `document?query=*${partyId}*&includeConfidential=${includeConfidential}&page=${page}&size=${size}`;
-	const sortQuery = `${Object.keys(sort)
-		.map((key) => `sort=${key}%2C${sort[key]}`)
-		.join('&')}`;
-	url = sortQuery ? `${url}&${sortQuery}` : url;
+	const url = `document?query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`;
+
 	return apiService
 		.get<PagedApiDocuments>(url)
 		.then((res: DocumentSearchResult) => {

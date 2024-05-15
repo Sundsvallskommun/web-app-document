@@ -8,11 +8,11 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { capitalize } from 'underscore.string';
 import { Fragment, useState } from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { Link, Button, Dialog , Checkbox, cx, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
+import { Link, Button, Checkbox, cx, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
 import { translateLegalId, findDocuments } from '@services/document-service/search-document-service'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import dayjs from 'dayjs';
 import { ApiPartyData, ApiDocument } from '@interfaces/document';
+import { DialogDocumentDetails } from '@components/dialog_documentdetails';
 
 export const SearchDocumentPage: React.FC = () => {
 	const user = useUserStore((s) => s.user, shallow);
@@ -24,6 +24,7 @@ export const SearchDocumentPage: React.FC = () => {
 	const [legalId, setLegalId] = useState(null);
 	const [isIncludeConfidential, setIsIncludeConfidential] = useState(false);
 	const [documents, setDocuments] = useState<ApiDocument[]>([]);
+	const [selectedDocument, setSelectedDocument] = useState<ApiDocument>(null);
 	const [paginationData, setPaginationData] = useState<{
 		page: number;
 		size: number;
@@ -31,10 +32,11 @@ export const SearchDocumentPage: React.FC = () => {
 		totalElements: number;
 	}>({});
 
-	const openHandler = () => {
+	const openDetails = (index: string) => {
+		setSelectedDocument(documents[index]);
 		setIsDetailOpen(true);
 	};
-	
+
 	const closeHandler = () => {
 		setIsDetailOpen(false);
 	};
@@ -47,8 +49,8 @@ export const SearchDocumentPage: React.FC = () => {
 	};
 
 	const search = () => {
-		if (legalId === null || 
-		(legalId.replace('-', '').length != 12 && legalId.replace('-', '').length != 10)) {
+		if (legalId === null ||
+			(legalId.replace('-', '').length != 12 && legalId.replace('-', '').length != 10)) {
 			setIsInvalidInput(true);
 			return;
 		}
@@ -57,16 +59,17 @@ export const SearchDocumentPage: React.FC = () => {
 		translateLegalId(legalId.replace('-', ''))
 			.then((response: ApiPartyData) => {
 				if (response.partyId === null) {
+					console.log(response)
 					snackBar({
 						message: t(`search_documents:errors.legalIdNotTranslatable`),
 						status: 'error',
 						position: 'top'
 					});
 					setIsLoading(false);
-					return;					
+					return;
 				}
-				
-				findDocuments(response.partyId, isIncludeConfidential, 0, 10, { registrationNumber: 'desc' })
+
+				findDocuments(response.partyId, isIncludeConfidential, 0, 10, { registrationNumber: 'desc', revision: 'asc' })
 					.then((res) => {
 						setDocuments(res.documents);
 						setPaginationData({
@@ -75,7 +78,7 @@ export const SearchDocumentPage: React.FC = () => {
 							totalPages: res.totalPages,
 							totalElements: res.totalElements,
 						});
-		
+
 						if (res.totalElements < 1) {
 							snackBar({
 								message: t(`search_documents:no_matching_documents`),
@@ -95,7 +98,7 @@ export const SearchDocumentPage: React.FC = () => {
 	const getPagedDocuments = (page: number) => {
 		translateLegalId(legalId.replace('-', ''))
 			.then((response: ApiPartyData) => {
-				findDocuments(response.partyId, isIncludeConfidential, page, 10, { registrationNumber: 'desc' })
+				findDocuments(response.partyId, isIncludeConfidential, page, 10, { registrationNumber: 'desc', revision: 'asc' })
 					.then((res) => {
 						setDocuments(res.documents);
 						setPaginationData({
@@ -167,7 +170,7 @@ export const SearchDocumentPage: React.FC = () => {
 			{
 				element: (
 					<Fragment key={`mr${idx}`}>
-						<span><Link href="#" onClick={openHandler}>{r.registrationNumber}</Link></span>
+						<span><Link href="#" onClick={() => openDetails(idx)}>{r.registrationNumber}</Link></span>
 					</Fragment>
 				),
 				isShown: true
@@ -205,37 +208,14 @@ export const SearchDocumentPage: React.FC = () => {
 					</Fragment>
 				),
 				isShown: true
-			},
-			{
-				element: (
-					<div className="w-full flex justify-end">
-						<Link
-							key={`mr${idx}`}
-							href={`/document/${r.id}/download`}
-							target="_blank"
-							className="no-underline w-full lg:w-44"
-						>
-							<div>
-								<span className="relative leading-[2.8rem]">
-									{t('search_documents:download_document')}
-									<span>
-										<OpenInNewIcon className="!w-[1.4rem] !h-[1.4rem] absolute -right-7 top-2" />
-									</span>
-								</span>
-							</div>
-						</Link>
-					</div>
-				),
-				isShown: true
 			}
 		];
 	});
 
 	return (
 		<DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME}` - t(`search_documents:title`)}>
-			<Dialog show={isDetailOpen} onClose={closeHandler}>
-				<Button onClick={closeHandler}>Stäng</Button>
-			</Dialog>
+
+			<DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 
 			<div style={{ position: 'relative', top: '-6.2em' }}>
 				<div style={{ float: 'right' }}>
@@ -268,7 +248,7 @@ export const SearchDocumentPage: React.FC = () => {
 							type="button"
 							className="input-and-button"
 							onClick={() => search()}
-							disabled={isLoading}
+							disabled={isLoading || legalId === null || legalId.length === 0}
 							leftIcon={
 								isLoading ? <Spinner /> : <SearchOutlinedIcon />
 							}>
@@ -335,7 +315,7 @@ export const SearchDocumentPage: React.FC = () => {
 
 export const getServerSideProps = async ({ locale }) => ({
 	props: {
-		...(await serverSideTranslations(locale, ['common', 'search_documents', 'layout'])),
+		...(await serverSideTranslations(locale, ['common', 'search_documents', 'dialog_documentdetails', 'layout'])),
 	},
 });
 

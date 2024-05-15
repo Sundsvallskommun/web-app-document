@@ -14,7 +14,7 @@ export class PartyController {
 
   @Get('/party/:legalId/partyId')
   @OpenAPI({ summary: 'Return partyId for sent in legalId' })
-  async getLegalId(@Param('legalId') legalId: string): Promise<PartyResponseData> {
+  async getPartyId(@Param('legalId') legalId: string): Promise<PartyResponseData> {
     let url;
     if (legalId.length == 10) {
       url = `party/1.0/ENTERPRISE/${legalId}/partyId`;
@@ -25,9 +25,9 @@ export class PartyController {
     }
     const res = await this.apiService.get<{ status: string }>({ url }).catch(e => {
       logger.error('Error when retrieving partyId for sent in legalId:', e);
-      return { data: null, message: `Error when retrieving partyId for sent in legalId` };
+      return { data: null, message: e.message };
     });
 
-    return { partyId: res.data, message: `Successful translation` } as PartyResponseData;
+    return { partyId: res.data, message: res.message } as PartyResponseData;
   }
 }

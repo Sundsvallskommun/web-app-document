@@ -9,8 +9,8 @@
 	"displaying_page": "visar sida",
 	"of": "av",
 	"errors": {
-		"invalidLegalId": "Du har inte angivit ett korrekt personnummer (giltigt format är YYYYMMDDNNNN eller YYYYMMDD-NNNN)",
-		"legalIdNotTranslatable": "Angivet personnummer kan inte översättas till motsvarande partyId"
+		"invalidLegalId": "Du har angivit ett felaktigt personnummer eller organisationsnummer (för personnummer gäller YYYYMMDDNNNN eller YYYYMMDD-NNNN och för organisationsnummer gäller NNNNNNNNNN eller NNNNNN-NNNN)",
+		"legalIdNotTranslatable": "Angivet personnummer eller organisationsnummer går ej översätta"
 	},
   	"searchtable_headers": {
 	  	"municipality": "Kommun",
@@ -22,6 +22,5 @@
   	},
 	"document_table_title": "Dokument som mathcar sökning",
   	"confidential": "Konfidentiellt",
-  	"public": "Publikt",
-  	"download_document": "Hämta dokument"
+  	"public": "Publikt"
 }
