@@ -21,7 +21,7 @@ export class PartyController {
     }
     return await this.apiService
       .get<{ status: string }>({ url })
-      .then(response => response.data as string)
+      .then(response => response.data as unknown as string)
       .catch(e => {
         logger.error('Error when retrieving partyId for sent in legalId:', e);
         return null;
