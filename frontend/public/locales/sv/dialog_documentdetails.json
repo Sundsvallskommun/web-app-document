@@ -10,10 +10,10 @@
 					"sensitivity": "Känslighet",
 					"legalCitation": "Lagrum",
 					"created": "Skapad",
-					"archive": "Ska arkiveras"
+					"archive": "Arkiveras"
 				},
 				"rows": {
-					"confidential": "Sekretessbelagt",
+					"confidential": "Konfidentiellt",
 					"public": "Publikt",
 					"by": "av",
 					"yes": "Ja",

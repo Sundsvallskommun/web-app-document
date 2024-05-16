@@ -1,30 +1,14 @@
-export interface ApiPagingData {
-  pageable: {
-    sort: {
-      empty: boolean;
-      sorted: boolean;
-      unsorted: boolean;
-    };
-    offset: number;
-    pageNumber: number;
-    pageSize: number;
-    paged: boolean;
-    unpaged: boolean;
-  };
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-  size: number;
-  number: number;
-  sort: {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-  };
-  first: boolean;
-  numberOfElements: number;
-  empty: boolean;
-}
+export interface ApiDocumentSearchResult {
+    documents: ApiDocument[];
+    _meta: {
+		count: number;
+		limit: number;
+	    page: number;
+	    size: number;
+	    totalPages: number;
+	    totalElements: number;
+	};
+} 
 
 export interface ApiDocument {
   id: string;
@@ -34,13 +18,13 @@ export interface ApiDocument {
   confidentiality: {
 	confidential: boolean;
 	legalCitation: string;
-  },
+  };
   description: string;
   created: string;
   createdBy: string;
   archive: boolean;
-  metadataList: ApiMetadataItem[]
-  documentData: ApiDocumentData[]
+  metadataList: ApiMetadataItem[];
+  documentData: ApiDocumentData[];
 }
 
 export interface ApiMetadataItem {

@@ -10,13 +10,14 @@
 	"of": "av",
 	"errors": {
 		"invalidLegalId": "Du har angivit ett felaktigt personnummer eller organisationsnummer (för personnummer gäller YYYYMMDDNNNN eller YYYYMMDD-NNNN och för organisationsnummer gäller NNNNNNNNNN eller NNNNNN-NNNN)",
-		"legalIdNotTranslatable": "Angivet personnummer eller organisationsnummer går ej översätta"
+		"legalIdNotTranslatable": "Angivet personnummer eller organisationsnummer går ej översätta",
+		"errorSearchingDocuments": "Ett fel inträffade vid sökning av matchande dokument"
 	},
   	"searchtable_headers": {
-	  	"municipality": "Kommun",
 	  	"diarynumber": "Dokument-nummer",
-	  	"revision": "Revision",
+	  	"description": "Beskrivning",
 	  	"confidentiality": "Känslighet",
+	  	"revision": "Revision",
 	  	"created": "Skapat",
 	  	"created_by": "Skapat av"
   	},

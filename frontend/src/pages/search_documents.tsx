@@ -11,18 +11,18 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Link, Button, Checkbox, cx, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
 import { translateLegalId, findDocuments } from '@services/document-service/search-document-service'
 import dayjs from 'dayjs';
-import { ApiPartyData, ApiDocument } from '@interfaces/document';
+import { ApiDocument } from '@interfaces/document';
 import { DialogDocumentDetails } from '@components/dialog_documentdetails';
 
 export const SearchDocumentPage: React.FC = () => {
 	const user = useUserStore((s) => s.user, shallow);
 	const { t } = useTranslation();
-	const [isInvalidInput, setIsInvalidInput] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isInvalidInput, setIsInvalidInput] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const snackBar = useSnackbar();
 	const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
-	const [legalId, setLegalId] = useState(null);
-	const [isIncludeConfidential, setIsIncludeConfidential] = useState(false);
+	const [legalId, setLegalId] = useState<string>(null);
+	const [isIncludeConfidential, setIsIncludeConfidential] = useState<boolean>(false);
 	const [documents, setDocuments] = useState<ApiDocument[]>([]);
 	const [selectedDocument, setSelectedDocument] = useState<ApiDocument>(null);
 	const [paginationData, setPaginationData] = useState<{
@@ -30,9 +30,9 @@ export const SearchDocumentPage: React.FC = () => {
 		size: number;
 		totalPages: number;
 		totalElements: number;
-	}>({});
+	}|null>(null);
 
-	const openDetails = (index: string) => {
+	const openDetails = (index: number) => {
 		setSelectedDocument(documents[index]);
 		setIsDetailOpen(true);
 	};
@@ -44,7 +44,7 @@ export const SearchDocumentPage: React.FC = () => {
 	const changeInput = (input: string) => {
 		setIsInvalidInput(false);
 		setDocuments([]);
-		setPaginationData({});
+		setPaginationData(null);
 		setLegalId(input);
 	};
 
@@ -56,49 +56,63 @@ export const SearchDocumentPage: React.FC = () => {
 		}
 
 		setIsLoading(true);
+		
 		translateLegalId(legalId.replace('-', ''))
-			.then((response: ApiPartyData) => {
-				if (response.partyId === null) {
-					console.log(response)
+			.then((partyId: string) => {
+				if (!partyId) {
+					setDocuments([]);
+					setPaginationData(null);
+					throw new Error('No matching partyId');
+				}
+				loadDocuments(partyId)
+			})
+			.catch((e) => {
+				console.error('Error when loading matching documents:', e);
+				snackBar({
+					message: t(`search_documents:errors.legalIdNotTranslatable`),
+					status: 'error',
+					position: 'top'
+				});
+				setIsLoading(false);
+			});
+			
+	};
+	
+	const loadDocuments = (partyId: string) => {
+		findDocuments(partyId, isIncludeConfidential, 0, 10)
+			.then((res) => {
+				setDocuments(res.documents);
+				setPaginationData({
+					page: res.page,
+					size: res.size,
+					totalPages: res.totalPages,
+					totalElements: res.totalElements,
+				});
+
+				if (res.totalElements < 1) {
 					snackBar({
-						message: t(`search_documents:errors.legalIdNotTranslatable`),
-						status: 'error',
+						message: t(`search_documents:no_matching_documents`),
+						status: 'info',
 						position: 'top'
 					});
-					setIsLoading(false);
-					return;
 				}
-
-				findDocuments(response.partyId, isIncludeConfidential, 0, 10, { registrationNumber: 'desc', revision: 'asc' })
-					.then((res) => {
-						setDocuments(res.documents);
-						setPaginationData({
-							page: res.page,
-							size: res.size,
-							totalPages: res.totalPages,
-							totalElements: res.totalElements,
-						});
-
-						if (res.totalElements < 1) {
-							snackBar({
-								message: t(`search_documents:no_matching_documents`),
-								status: 'info',
-								position: 'top'
-							});
-						}
-					})
-					.then(() => setIsLoading(false))
-					.catch((e) => {
-						console.error('Error when loading matching documents:', e);
-						setIsLoading(false);
-					});
+			})
+			.then(() => setIsLoading(false))
+			.catch((e) => {
+				console.error('Error when loading matching documents:', e);
+				snackBar({
+					message: t(`search_documents:errors.errorSearchingDocuments`),
+					status: 'error',
+					position: 'top'
+				});
+				setIsLoading(false);
 			});
 	};
-
+	
 	const getPagedDocuments = (page: number) => {
 		translateLegalId(legalId.replace('-', ''))
-			.then((response: ApiPartyData) => {
-				findDocuments(response.partyId, isIncludeConfidential, page, 10, { registrationNumber: 'desc', revision: 'asc' })
+			.then((partyId: string) => {
+				findDocuments(partyId, isIncludeConfidential, page, 10)
 					.then((res) => {
 						setDocuments(res.documents);
 						setPaginationData({
@@ -117,22 +131,22 @@ export const SearchDocumentPage: React.FC = () => {
 
 	const labels = [
 		{
-			label: t(`search_documents:searchtable_headers.municipality`),
-			sortable: true,
-			screenReaderOnly: false
-		},
-		{
 			label: t(`search_documents:searchtable_headers.diarynumber`),
 			sortable: true,
 			screenReaderOnly: false
 		},
 		{
-			label: t(`search_documents:searchtable_headers.revision`),
+			label: t(`search_documents:searchtable_headers.description`),
 			sortable: true,
 			screenReaderOnly: false
 		},
 		{
 			label: t(`search_documents:searchtable_headers.confidentiality`),
+			sortable: true,
+			screenReaderOnly: false
+		},
+		{
+			label: t(`search_documents:searchtable_headers.revision`),
 			sortable: true,
 			screenReaderOnly: false
 		},
@@ -162,14 +176,6 @@ export const SearchDocumentPage: React.FC = () => {
 			{
 				element: (
 					<Fragment key={`mr${idx}`}>
-						<span>{r.municipalityId}</span>
-					</Fragment>
-				),
-				isShown: true
-			},
-			{
-				element: (
-					<Fragment key={`mr${idx}`}>
 						<span><Link href="#" onClick={() => openDetails(idx)}>{r.registrationNumber}</Link></span>
 					</Fragment>
 				),
@@ -178,7 +184,7 @@ export const SearchDocumentPage: React.FC = () => {
 			{
 				element: (
 					<Fragment key={`mr${idx}`}>
-						<span>{r.revision}</span>
+						<span>{r.description}</span>
 					</Fragment>
 				),
 				isShown: true
@@ -189,6 +195,14 @@ export const SearchDocumentPage: React.FC = () => {
 						<span>
 							{r.confidentiality.confidential ? t(`search_documents:confidential`) : t(`search_documents:public`)}
 						</span>
+					</Fragment>
+				),
+				isShown: true
+			},
+			{
+				element: (
+					<Fragment key={`mr${idx}`}>
+						<span>{r.revision}</span>
 					</Fragment>
 				),
 				isShown: true
@@ -213,7 +227,7 @@ export const SearchDocumentPage: React.FC = () => {
 	});
 
 	return (
-		<DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME}` - t(`search_documents:title`)}>
+		<DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - t('search_documents:title')`}>
 
 			<DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 

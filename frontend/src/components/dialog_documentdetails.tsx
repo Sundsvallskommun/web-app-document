@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import {useState} from "react";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface DialogDocumentDetailsProps {
 	open: boolean;
@@ -17,7 +16,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 	const [metadataVisible, setMetadataVisible] = useState(false);
 	const handleOnClose = () => {
 		setMetadataVisible(false);
-		onClose();
+		onClose(true);
 	};
 	
 	return (
@@ -27,14 +26,6 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 				<h6>{t('dialog_documentdetails:header')} {document.registrationNumber}</h6>
 				<Divider.Section>{t('dialog_documentdetails:sections.common.header')}</Divider.Section>
 				<table>
-					<tr>
-						<td>
-      						{t('dialog_documentdetails:sections.common.table.headers.revision')}
-						</td>
-						<td>
-							{document.revision}
-						</td>
-					</tr>
 					<tr>
 						<td>
       						{t('dialog_documentdetails:sections.common.table.headers.description')}
@@ -53,6 +44,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 						</td>
 					</tr>
 					{document.confidentiality?.confidential &&
+					document.confidentiality?.legalCitation &&
 					<tr>
 						<td>
       						{t('dialog_documentdetails:sections.common.table.headers.legalCitation')}
@@ -62,6 +54,22 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 						</td>
 					</tr>
 					}
+					<tr>
+						<td>
+							&nbsp;
+						</td>
+						<td>
+							&nbsp;
+						</td>
+					</tr>
+					<tr>
+						<td>
+      						<p>{t('dialog_documentdetails:sections.common.table.headers.revision')}</p>
+						</td>
+						<td>
+							{document.revision}
+						</td>
+					</tr>
 					<tr>
 						<td>
       						{t('dialog_documentdetails:sections.common.table.headers.created')}
@@ -75,7 +83,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
       						{t('dialog_documentdetails:sections.common.table.headers.archive')}
 						</td>
 						<td>
-						{document.archive}
+							{document.archive}
 							{document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.yes')}</p>}
 							{!document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.no')}</p>}
 						</td>

@@ -66,7 +66,7 @@ export default function Start() {
   }
 
   return (
-    <EmptyLayout title={`${process.env.NEXT_PUBLIC_APP_NAME}` - t(`common:login`)}>
+    <EmptyLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - t('common:login')`}>
       <main>
         <div className="flex items-center justify-center min-h-screen">
           <div className="max-w-5xl w-full flex flex-col text-light-primary bg-inverted-background-content p-20 shadow-lg text-left">
