@@ -1,5 +1,5 @@
 import { ApiDocumentSearchResult, ApiDocument, ApiPartyData } from '@interfaces/document';
-import { ApiResponse, apiService } from '@services/api-service';
+import { apiService } from '@services/api-service';
 
 export interface Document extends ApiDocument {}
 
@@ -17,7 +17,7 @@ export const translateLegalId: ( legalId: string ) => Promise<string> = async (l
 	const url = `party/${legalId}/partyId`;
 
 	return apiService
-		.get<ApiResponse<ApiPartyData>>(url)
+		.get<ApiPartyData>(url)
 		.then((res) => res.data as unknown as string)
 		.catch((e) => {
         	console.log(e);
@@ -34,15 +34,14 @@ export const findDocuments: (
 	const url = `document?query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`;
 
     return apiService
-    	.get<ApiResponse<ApiDocumentSearchResult>>(url)
+    	.get<ApiDocumentSearchResult>(url)
     	.then((res) => {
-			console.log(res);
 	        return {
 	            documents: mapToDocuments(res.data.documents),
 	            page: res.data._meta.page,
 	            size: res.data._meta.limit,
 	            totalPages: res.data._meta.totalPages,
-	            totalElements: res.data._meta.totalRecords
+	            totalElements: res.data._meta.totalElements
 	        } as DocumentSearchResult;
 		})
 		.catch((e) => {
