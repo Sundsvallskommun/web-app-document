@@ -37,3 +37,14 @@ yarn-error.log*
 .vercel
 .npmrc
 .yarnrc
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws

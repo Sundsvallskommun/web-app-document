@@ -141,3 +141,15 @@ data/
 
 # certs
 cert/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
