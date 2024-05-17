@@ -19,6 +19,20 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 		onClose(true);
 	};
 	
+	const format: ( value: string ) => string = (value) => {
+		try {
+			const json = JSON.parse(value);
+			if ((typeof json === 'object')) {
+				return Object.entries(JSON.parse(value)).map((entry) => {
+					return "<p>" + entry[0] + " : " + entry[1] + "</p>";
+				}).join("");
+			}
+			return "<p>" + value + "</p>";
+		} catch (e) {
+			return "<p>" + value + "</p>";
+		}
+	};
+	
 	return (
 		<Dialog show={open} className="md:min-w-[100rem]">
 		{document &&
@@ -127,13 +141,13 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 				{metadataVisible && 
 				<div>
 					<table>
-					{document.metadataList.map((metaData) => (
-						<tr key={metaData.key}>
-							<td>
+					{document.metadataList.map((metaData, idx) => (
+						<tr key={metaData.key + idx}>
+							<td className="metadata">
 								{metaData.key}
 							</td>
 							<td>
-								{metaData.value}
+								<div className="metadata" dangerouslySetInnerHTML={{__html: format(metaData.value)}} />
 							</td>
 						</tr>
 					))}

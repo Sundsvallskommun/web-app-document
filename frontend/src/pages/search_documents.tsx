@@ -56,30 +56,33 @@ export const SearchDocumentPage: React.FC = () => {
 		}
 
 		setIsLoading(true);
-		
 		translateLegalId(legalId.replace('-', ''))
 			.then((partyId: string) => {
 				if (!partyId) {
-					setDocuments([]);
-					setPaginationData(null);
 					throw new Error('No matching partyId');
 				}
-				loadDocuments(partyId)
+				loadDocuments(partyId, 0);
 			})
 			.catch((e) => {
-				console.error('Error when loading matching documents:', e);
-				snackBar({
-					message: t(`search_documents:errors.legalIdNotTranslatable`),
-					status: 'error',
-					position: 'top'
-				});
-				setIsLoading(false);
+				handleError('Error when loading matching documents:', e, t('search_documents:errors.legalIdNotTranslatable'));
 			});
-			
 	};
 	
-	const loadDocuments = (partyId: string) => {
-		findDocuments(partyId, isIncludeConfidential, 0, 10)
+	const switchPage = (page: number) => {
+		translateLegalId(legalId.replace('-', ''))
+			.then((partyId: string) => {
+				if (!partyId) {
+					throw new Error('No matching partyId');
+				}
+				loadDocuments(partyId, page);
+			})
+			.catch((e) => {
+				handleError('Error when loading matching documents:', e, t('search_documents:errors.legalIdNotTranslatable'));
+			});
+	};
+	
+	const loadDocuments = (partyId: string, page: number) => {
+		findDocuments(partyId, isIncludeConfidential, page, 10)
 			.then((res) => {
 				setDocuments(res.documents);
 				setPaginationData({
@@ -99,36 +102,22 @@ export const SearchDocumentPage: React.FC = () => {
 			})
 			.then(() => setIsLoading(false))
 			.catch((e) => {
-				console.error('Error when loading matching documents:', e);
-				snackBar({
-					message: t(`search_documents:errors.errorSearchingDocuments`),
-					status: 'error',
-					position: 'top'
-				});
-				setIsLoading(false);
+				handleError('Error when loading matching documents:', e, t('search_documents:errors.errorSearchingDocuments'));
 			});
 	};
 	
-	const getPagedDocuments = (page: number) => {
-		translateLegalId(legalId.replace('-', ''))
-			.then((partyId: string) => {
-				findDocuments(partyId, isIncludeConfidential, page, 10)
-					.then((res) => {
-						setDocuments(res.documents);
-						setPaginationData({
-							page: res.page,
-							size: res.size,
-							totalPages: res.totalPages,
-							totalElements: res.totalElements,
-						});
-					})
-					.catch((e) => {
-						console.error('Error when loading matching documents:', e);
-						setIsLoading(false);
-					});
-			});
+	const handleError = (errorDescription: string, e: Error, message: string) => {
+		console.error(errorDescription, e);
+		snackBar({
+			message: message,
+			status: 'error',
+			position: 'top'
+		});
+		setDocuments([]);
+		setPaginationData(null);
+		setIsLoading(false);
 	};
-
+	
 	const labels = [
 		{
 			label: t(`search_documents:searchtable_headers.diarynumber`),
@@ -175,7 +164,7 @@ export const SearchDocumentPage: React.FC = () => {
 		return [
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span><Link href="#" onClick={() => openDetails(idx)}>{r.registrationNumber}</Link></span>
 					</Fragment>
 				),
@@ -183,7 +172,7 @@ export const SearchDocumentPage: React.FC = () => {
 			},
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span>{r.description}</span>
 					</Fragment>
 				),
@@ -191,7 +180,7 @@ export const SearchDocumentPage: React.FC = () => {
 			},
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span>
 							{r.confidentiality.confidential ? t(`search_documents:confidential`) : t(`search_documents:public`)}
 						</span>
@@ -201,7 +190,7 @@ export const SearchDocumentPage: React.FC = () => {
 			},
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span>{r.revision}</span>
 					</Fragment>
 				),
@@ -209,7 +198,7 @@ export const SearchDocumentPage: React.FC = () => {
 			},
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span>{dayjs(r.created).format('YYYY-MM-DD HH:mm')}</span>
 					</Fragment>
 				),
@@ -217,7 +206,7 @@ export const SearchDocumentPage: React.FC = () => {
 			},
 			{
 				element: (
-					<Fragment key={`mr${idx}`}>
+					<Fragment key={`mr${r.id}`}>
 						<span>{r.createdBy}</span>
 					</Fragment>
 				),
@@ -313,7 +302,7 @@ export const SearchDocumentPage: React.FC = () => {
 										pages={paginationData?.totalPages}
 										activePage={paginationData?.page + 1}
 										changePage={(p) => {
-											getPagedDocuments(p - 1);
+											switchPage(p - 1);
 										}}
 									/>
 									<div className="w-full px-lg mt-sm border-b border-gray-stroke"></div>

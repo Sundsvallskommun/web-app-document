@@ -47,3 +47,14 @@ input.sk-form-input.sk-form-input-md.input-and-button {
 	border-bottom-color: black;
     border-bottom-width: 0.1rem;
 }
+td.metadata {
+	padding-top: 5px;
+	vertical-align: top;
+}
+div.metadata {
+	padding-left: 1em;
+}
+div.metadata p:not(:last-child) {
+	padding-bottom: 4px;
+	
+}
