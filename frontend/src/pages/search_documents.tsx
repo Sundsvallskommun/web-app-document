@@ -89,10 +89,10 @@ export const SearchDocumentPage: React.FC = () => {
 					page: res.page,
 					size: res.size,
 					totalPages: res.totalPages,
-					totalElements: res.totalElements,
+					totalElements: res.totalRecords,
 				});
 
-				if (res.totalElements < 1) {
+				if (res.totalRecords < 1) {
 					snackBar({
 						message: t(`search_documents:no_matching_documents`),
 						status: 'info',

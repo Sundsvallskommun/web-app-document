@@ -26,7 +26,7 @@ class ApiService {
       params: { ...defaultParams, ...config.params },
       url: apiURL(config.url),
     };
-
+    logger.info(preparedConfig.method + ' ' + preparedConfig.url);
     try {
       const res = await axios(preparedConfig);
       return { data: res.data, message: 'success' };

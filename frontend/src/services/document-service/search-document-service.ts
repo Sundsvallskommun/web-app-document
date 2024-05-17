@@ -10,7 +10,7 @@ export interface DocumentSearchResult {
     page: number;
     size: number;
     totalPages: number;
-    totalElements: number;
+    totalRecords: number;
 } 
 
 export const translateLegalId: ( legalId: string ) => Promise<string> = async (legalId) => {
@@ -41,7 +41,7 @@ export const findDocuments: (
 	            page: res.data._meta.page,
 	            size: res.data._meta.limit,
 	            totalPages: res.data._meta.totalPages,
-	            totalElements: res.data._meta.totalElements
+	            totalRecords: res.data._meta.totalRecords
 	        } as DocumentSearchResult;
 		})
 		.catch((e) => {
