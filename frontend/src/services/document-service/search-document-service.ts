@@ -75,6 +75,7 @@ export const mapApiDocumentToDocument: (e: ApiDocument) => Document = (e) => {
 		return idocument;
 	} catch (e) {
 		console.error('Error: could not map document.', e);
+		throw e;
 	}
 };
 
@@ -83,15 +84,15 @@ export const fetchDocumentFile: (
 	documentDataId: string, 
 	includeConfidential: boolean,
 ) => Promise<string> = async (registrationNumber, documentDataId, includeConfidential) => {
-  if (!registrationNumber || !documentDataId) {
-    console.error('RegistrationNumber or documentDataId missing, cannot fetch. Returning.');
-  }
-  const url = `document/${registrationNumber}/file/${documentDataId}?includeConfidential=${includeConfidential}`;
-  return apiService
-    .get<string>(url)
-    .then((res) => res.data)
-    .catch((e) => {
-      console.error('Error occurred when fetching documentdata with id %s for document %s', documentDataId, registrationNumber, e);
-      throw e;
-    });
+	if (!registrationNumber || !documentDataId) {
+		console.error('RegistrationNumber or documentDataId missing, cannot fetch. Returning.');
+	}
+	const url = `document/${registrationNumber}/file/${documentDataId}?includeConfidential=${includeConfidential}`;
+	return apiService
+		.get<string>(url)
+		.then((res) => res.data)
+		.catch((e) => {
+			console.error('Error occurred when fetching documentdata with id %s for document %s', documentDataId, registrationNumber, e);
+			throw e;
+		});
 };
