@@ -216,7 +216,7 @@ export const SearchDocumentPage: React.FC = () => {
 	});
 
 	return (
-		<DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - t('search_documents:title')`}>
+		<DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - ${t('search_documents:title')}`}>
 
 			<DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 
