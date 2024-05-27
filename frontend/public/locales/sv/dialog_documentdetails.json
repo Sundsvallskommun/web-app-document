@@ -1,0 +1,47 @@
+{
+	"header": "Detaljerad information för dokument",
+	"sections": {
+		"common": {
+			"header": "Dokumentinformation",
+			"table": {
+				"headers": {
+					"revision": "Revision",
+					"description": "Beskrivning",
+					"sensitivity": "Känslighet",
+					"legalCitation": "Lagrum",
+					"created": "Skapad",
+					"archive": "Arkiveras"
+				},
+				"rows": {
+					"confidential": "Konfidentiellt",
+					"public": "Publikt",
+					"by": "av",
+					"yes": "Ja",
+					"no": "Nej"
+				}
+			}
+		},
+		"files": {
+			"header": {
+				"single": "Ingående fil",
+				"multiple": "Ingående filer"
+			},
+			"rows": {
+				"filesize": "filstorlek",
+				"download_document": "Hämta dokument"
+				
+			}
+		},
+		"metadata": {
+			"header": {
+				"metadata": "Metadata",
+				"hide": "dölj",
+				"show": "visa"
+				
+			}
+		}
+	},
+	"buttons": {
+		"close": "Stäng"
+	}
+}
