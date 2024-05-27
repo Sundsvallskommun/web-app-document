@@ -9,10 +9,9 @@ import { capitalize } from 'underscore.string';
 import { Fragment, useState } from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Link, Button, Checkbox, cx, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
-import { translateLegalId, findDocuments } from '@services/document-service/search-document-service'
+import { Document, translateLegalId, searchDocuments } from '@services/document-service/search-document-service'
 import dayjs from 'dayjs';
-import { ApiDocument } from '@interfaces/document';
-import { DialogDocumentDetails } from '@components/dialog_documentdetails';
+import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetails';
 
 export const SearchDocumentPage: React.FC = () => {
 	const user = useUserStore((s) => s.user, shallow);
@@ -23,8 +22,8 @@ export const SearchDocumentPage: React.FC = () => {
 	const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
 	const [legalId, setLegalId] = useState<string>(null);
 	const [isIncludeConfidential, setIsIncludeConfidential] = useState<boolean>(false);
-	const [documents, setDocuments] = useState<ApiDocument[]>([]);
-	const [selectedDocument, setSelectedDocument] = useState<ApiDocument>(null);
+	const [documents, setDocuments] = useState<Document[]>([]);
+	const [selectedDocument, setSelectedDocument] = useState<Document>(null);
 	const [paginationData, setPaginationData] = useState<{
 		page: number;
 		size: number;
@@ -82,7 +81,7 @@ export const SearchDocumentPage: React.FC = () => {
 	};
 	
 	const loadDocuments = (partyId: string, page: number) => {
-		findDocuments(partyId, isIncludeConfidential, page, 10)
+		searchDocuments(partyId, isIncludeConfidential, page, 10)
 			.then((res) => {
 				setDocuments(res.documents);
 				setPaginationData({
@@ -160,7 +159,7 @@ export const SearchDocumentPage: React.FC = () => {
 		screenReaderOnly: l.screenReaderOnly,
 	}));
 
-	const rows: ZebraTableColumn[][] = documents.map((r: ApiDocument, idx) => {
+	const rows: ZebraTableColumn[][] = documents.map((r: Document, idx) => {
 		return [
 			{
 				element: (

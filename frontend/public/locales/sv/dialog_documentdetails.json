@@ -1,5 +1,8 @@
 {
 	"header": "Detaljerad information för dokument",
+	"errors": {
+		"filedownload": "Ett fel inträffade vid nedladdning"
+	},
 	"sections": {
 		"common": {
 			"header": "Dokumentinformation",

@@ -3,8 +3,6 @@ import { apiService } from '@services/api-service';
 
 export interface Document extends ApiDocument {}
 
-export interface PartyData extends ApiPartyData {}
-
 export interface DocumentSearchResult {
     documents: Document[];
     page: number;
@@ -20,12 +18,12 @@ export const translateLegalId: ( legalId: string ) => Promise<string> = async (l
 		.get<ApiPartyData>(url)
 		.then((res) => res.data as unknown as string)
 		.catch((e) => {
-        	console.log(e);
+			console.error('Error occurred when translating legalId %s', legalId, e);
         	throw e;
 		});
 };
 
-export const findDocuments: (
+export const searchDocuments: (
 	partyId: string,
 	includeConfidential: boolean,
 	page?: number,
@@ -45,7 +43,7 @@ export const findDocuments: (
 	        } as DocumentSearchResult;
 		})
 		.catch((e) => {
-        	console.log(e);
+			console.error('Error occurred when searching documents connected to party with id %s', partyId, e);
         	throw e;
 		});
 };
@@ -64,8 +62,8 @@ export const mapApiDocumentToDocument: (e: ApiDocument) => Document = (e) => {
 			registrationNumber: e.registrationNumber,
 			revision: e.revision,
 			confidentiality: {
-				confidential: e.confidentiality.confidential,
-				legalCitation: e.confidentiality.legalCitation
+				confidential: e.confidentiality?.confidential || false,
+				legalCitation: e.confidentiality?.legalCitation
 			},
 			description: e.description,
 			created: e.created,
@@ -78,4 +76,22 @@ export const mapApiDocumentToDocument: (e: ApiDocument) => Document = (e) => {
 	} catch (e) {
 		console.error('Error: could not map document.', e);
 	}
+};
+
+export const fetchDocumentFile: (
+	registrationNumber: string, 
+	documentDataId: string, 
+	includeConfidential: boolean,
+) => Promise<string> = async (registrationNumber, documentDataId, includeConfidential) => {
+  if (!registrationNumber || !documentDataId) {
+    console.error('RegistrationNumber or documentDataId missing, cannot fetch. Returning.');
+  }
+  const url = `document/${registrationNumber}/file/${documentDataId}?includeConfidential=${includeConfidential}`;
+  return apiService
+    .get<string>(url)
+    .then((res) => res.data)
+    .catch((e) => {
+      console.error('Error occurred when fetching documentdata with id %s for document %s', documentDataId, registrationNumber, e);
+      throw e;
+    });
 };

@@ -1,9 +1,10 @@
-import { Button, Dialog, Link, Divider } from '@sk-web-gui/react';
-import { ApiDocument } from '@interfaces/document';
+import { Button, Dialog, Link, Divider, useSnackbar } from '@sk-web-gui/react';
+import { ApiDocument, ApiDocumentData } from '@interfaces/document';
 import dayjs from 'dayjs';
 import {useState} from "react";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'next-i18next';
+import { fetchDocumentFile } from '@services/document-service/search-document-service'
 
 interface DialogDocumentDetailsProps {
 	open: boolean;
@@ -14,6 +15,7 @@ interface DialogDocumentDetailsProps {
 export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ open, document, onClose }) => {
 	const { t } = useTranslation();
 	const [metadataVisible, setMetadataVisible] = useState(false);
+	const snackBar = useSnackbar();
 	const handleOnClose = () => {
 		setMetadataVisible(false);
 		onClose(true);
@@ -33,6 +35,26 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 		}
 	};
 	
+	const fetchFile = ( documentData : ApiDocumentData ) => {
+		fetchDocumentFile(document.registrationNumber, documentData.id, document.confidentiality?.confidential || false)
+			.then((res) => {
+				const uri = `data:${documentData.mimeType};base64,${res}`;
+				const link = window.document.createElement('a');
+				link.href = uri;
+				link.setAttribute('download', `${documentData.fileName}`);
+				window.document.body.appendChild(link);
+				link.click();
+			})
+			.catch((e) => {
+				console.error('Error occurred during download', e);
+				snackBar({
+					message: t('dialog_documentdetails:errors.filedownload'),
+					status: 'error',
+					position: 'top'
+				});
+		});
+	};
+
 	return (
 		<Dialog show={open} className="md:min-w-[100rem]">
 		{document &&
@@ -118,8 +140,8 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
 						</td>
 						<td>
 							<Link
-								href={`/document/${documentData.id}/download`}
-								target="_blank"
+								onClick={() => fetchFile(documentData)}
+								href={'#'}
 								className="no-underline w-full lg:w-44"
 							>
 								<span className="relative leading-[2.8rem]">
