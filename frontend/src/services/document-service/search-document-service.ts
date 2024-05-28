@@ -19,7 +19,7 @@ export const translateLegalId: ( legalId: string ) => Promise<string> = async (l
 		.then((res) => res.data as unknown as string)
 		.catch((e) => {
 			console.error('Error occurred when translating legalId %s', legalId, e);
-        	throw e;
+			throw e;
 		});
 };
 
@@ -44,7 +44,7 @@ export const searchDocuments: (
 		})
 		.catch((e) => {
 			console.error('Error occurred when searching documents connected to party with id %s', partyId, e);
-        	throw e;
+			throw e;
 		});
 };
 
