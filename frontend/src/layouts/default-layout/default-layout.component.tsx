@@ -1,4 +1,8 @@
-import { CookieConsent, Footer, Header, Link } from '@sk-web-gui/react';
+import { CookieConsent, Button, Image, Footer, Header, Link } from '@sk-web-gui/react';
+import { useUserStore } from '@services/user-service/user-service';
+import { shallow } from 'zustand/shallow';
+import { capitalize } from 'underscore.string';
+
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -26,6 +30,8 @@ export default function DefaultLayout({
   logoLinkHref = '/',
 }: DefaultLayoutProps) {
   const router = useRouter();
+  const user = useUserStore((s) => s.user, shallow);
+  const { pathname, asPath, query } = router;  
   const layoutTitle = `${process.env.NEXT_PUBLIC_APP_NAME}${headerSubtitle ? ` - ${headerSubtitle}` : ''}`;
   const fullTitle = postTitle ? `${layoutTitle} - ${postTitle}` : `${layoutTitle}`;
 
@@ -40,6 +46,10 @@ export default function DefaultLayout({
     router.push(logoLinkHref);
   };
 
+  const handleLanguageChange = (langValue: string) => {
+    router.push({ pathname, query }, asPath, { locale: langValue });
+  };
+  
   return (
     <div className="DefaultLayout full-page-layout">
       <Head>
@@ -60,7 +70,32 @@ export default function DefaultLayout({
         aria-label={`${headerTitle ? headerTitle : process.env.NEXT_PUBLIC_APP_NAME} ${headerSubtitle}`}
         logoLinkOnClick={handleLogoClick}
         LogoLinkWrapperComponent={<NextLink legacyBehavior href={logoLinkHref} passHref />}
-      />
+      >
+      
+        <div className='language-bar'>
+          <Button.Group>
+            <Button iconButton onClick={() => handleLanguageChange('sv')}>
+              <Image alt='Svenska' htmlHeight='42' htmlWidth='26' src='/png/se.png'/>
+            </Button>
+
+            <Button iconButton onClick={() => handleLanguageChange('en')}>
+              <Image alt='Engelska' htmlHeight='42' htmlWidth='26' src='/png/en.png'/>
+            </Button>
+            
+            {user.name ?
+              <Button>
+                <NextLink href={`/logout`}>
+                  <Link as="span" variant="link">
+                    {capitalize(t('common:logout'))}
+                  </Link>
+                </NextLink>
+              </Button>
+            : ''}
+            
+          </Button.Group>
+        </div>
+      
+      </Header>
 
       {preContent && preContent}
 

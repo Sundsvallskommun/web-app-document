@@ -1,7 +1,6 @@
 import DefaultLayout from '@layouts/default-layout/default-layout.component';
 import Main from '@layouts/main/main.component';
 import { useUserStore } from '@services/user-service/user-service';
-import NextLink from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { shallow } from 'zustand/shallow';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -95,7 +94,8 @@ export const SearchDocumentPage: React.FC = () => {
 					snackBar({
 						message: t(`search_documents:no_matching_documents`),
 						status: 'info',
-						position: 'top'
+						position: 'top',
+						closeable: false
 					});
 				}
 			})
@@ -110,7 +110,8 @@ export const SearchDocumentPage: React.FC = () => {
 		snackBar({
 			message: message,
 			status: 'error',
-			position: 'top'
+			position: 'top',
+			closeable: false
 		});
 		setDocuments([]);
 		setPaginationData(null);
@@ -219,17 +220,6 @@ export const SearchDocumentPage: React.FC = () => {
 
 			<DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 
-			<div style={{ position: 'relative', top: '-6.2em' }}>
-				<div style={{ float: 'right' }}>
-					{user.name ?
-						<NextLink href={`/logout`}>
-							<Link as="span" variant="link">
-								{capitalize(t('common:logout'))}
-							</Link>
-						</NextLink>
-						: ''}
-				</div>
-			</div>
 			<Main>
 				<div className="text-content">
 					<h1>

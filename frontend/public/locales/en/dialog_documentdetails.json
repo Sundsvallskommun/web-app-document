@@ -1,0 +1,50 @@
+{
+	"header": "Detailed document information for document",
+	"errors": {
+		"filedownload": "An error occurred during document download"
+	},
+	"sections": {
+		"common": {
+			"header": "Document information",
+			"table": {
+				"headers": {
+					"revision": "Revision",
+					"description": "Description",
+					"sensitivity": "Sensitivity",
+					"legalCitation": "Legal citation",
+					"created": "Created",
+					"archive": "Should be archived"
+				},
+				"rows": {
+					"confidential": "Confidential",
+					"public": "Public",
+					"by": "by",
+					"yes": "Yes",
+					"no": "No"
+				}
+			}
+		},
+		"files": {
+			"header": {
+				"single": "Attached file",
+				"multiple": "Attached files"
+			},
+			"rows": {
+				"filesize": "file size",
+				"download_document": "Download document"
+				
+			}
+		},
+		"metadata": {
+			"header": {
+				"metadata": "Metadata",
+				"hide": "hide",
+				"show": "show"
+				
+			}
+		}
+	},
+	"buttons": {
+		"close": "Close"
+	}
+}

@@ -1,0 +1,8 @@
+{
+  "description": "This application enables you to search for documents connected to a legal id",
+  "errors": {
+    "SAML_MISSING_GROUP": "The user is missing the correct groups",
+    "SAML_MISSING_ATTRIBUTES": "The user is missing the correct attributes",
+    "MISSING_PERMISSIONS": "The user does not have the correct permissions"
+  }
+}
