@@ -85,7 +85,8 @@ export const fetchDocumentFile: (
 	includeConfidential: boolean,
 ) => Promise<string> = async (registrationNumber, documentDataId, includeConfidential) => {
 	if (!registrationNumber || !documentDataId) {
-		console.error('RegistrationNumber or documentDataId missing, cannot fetch. Returning.');
+		console.error('RegistrationNumber or documentDataId missing, cannot fetch.');
+		throw new Error('Missing vital input for retriieving document data');
 	}
 	const url = `document/${registrationNumber}/file/${documentDataId}?includeConfidential=${includeConfidential}`;
 	return apiService
