@@ -1,27 +1,27 @@
 {
-	"title": "search document",
-	"description": "Search for documents connected to a legal id",
-	"search": "Search", 
-	"ongoing_search": "Searching",
-	"include_confidential": "Include confidential documents in the search",
-	"no_matching_documents": "No matching documents was found",
-	"matching_documents": "documents matches the legal id",
-	"displaying_page": "showing page",
-	"of": "of",
-	"errors": {
-		"invalidLegalId": "You have entered an illegal legal id or organization number (legal id has format of YYYYMMDDNNNN or YYYYMMDD-NNNN and organization numbers has format of NNNNNNNNNN or NNNNNN-NNNN)",
-		"legalIdNotTranslatable": "The entered legal id or organization number can not be translated",
-		"errorSearchingDocuments": "An error occurred when searching for matching documents"
-	},
-  	"searchtable_headers": {
-	  	"diarynumber": "Document number",
-	  	"description": "Description",
-	  	"confidentiality": "Confidentiality",
-	  	"revision": "Revision",
-	  	"created": "Created",
-	  	"created_by": "Created by"
-  	},
-	"document_table_title": "Documents matching searching parameters",
-  	"confidential": "Confidential",
-  	"public": "Public"
+  "title": "search document",
+  "description": "Search for documents connected to a legal id",
+  "search": "Search", 
+  "ongoing_search": "Searching",
+  "include_confidential": "Include confidential documents in the search",
+  "no_matching_documents": "No matching documents was found",
+  "matching_documents": "documents matches the legal id",
+  "displaying_page": "showing page",
+  "of": "of",
+  "errors": {
+    "invalidLegalId": "You have entered an illegal legal id or organization number (legal id has format of YYYYMMDDNNNN or YYYYMMDD-NNNN and organization numbers has format of NNNNNNNNNN or NNNNNN-NNNN)",
+    "legalIdNotTranslatable": "The entered legal id or organization number can not be translated",
+    "errorSearchingDocuments": "An error occurred when searching for matching documents"
+  },
+    "searchtable_headers": {
+      "diarynumber": "Document number",
+      "description": "Description",
+      "confidentiality": "Confidentiality",
+      "revision": "Revision",
+      "created": "Created",
+      "created_by": "Created by"
+    },
+  "document_table_title": "Documents matching searching parameters",
+    "confidential": "Confidential",
+    "public": "Public"
 }

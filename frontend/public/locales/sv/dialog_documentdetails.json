@@ -1,50 +1,50 @@
 {
-	"header": "Detaljerad information för dokument",
-	"errors": {
-		"filedownload": "Ett fel inträffade vid nedladdning"
-	},
-	"sections": {
-		"common": {
-			"header": "Dokumentinformation",
-			"table": {
-				"headers": {
-					"revision": "Revision",
-					"description": "Beskrivning",
-					"sensitivity": "Känslighet",
-					"legalCitation": "Lagrum",
-					"created": "Skapad",
-					"archive": "Arkiveras"
-				},
-				"rows": {
-					"confidential": "Konfidentiellt",
-					"public": "Publikt",
-					"by": "av",
-					"yes": "Ja",
-					"no": "Nej"
-				}
-			}
-		},
-		"files": {
-			"header": {
-				"single": "Ingående fil",
-				"multiple": "Ingående filer"
-			},
-			"rows": {
-				"filesize": "filstorlek",
-				"download_document": "Hämta dokument"
-				
-			}
-		},
-		"metadata": {
-			"header": {
-				"metadata": "Metadata",
-				"hide": "dölj",
-				"show": "visa"
-				
-			}
-		}
-	},
-	"buttons": {
-		"close": "Stäng"
-	}
+  "header": "Detaljerad information för dokument",
+  "errors": {
+    "filedownload": "Ett fel inträffade vid nedladdning"
+  },
+  "sections": {
+    "common": {
+      "header": "Dokumentinformation",
+      "table": {
+        "headers": {
+          "revision": "Revision",
+          "description": "Beskrivning",
+          "sensitivity": "Känslighet",
+          "legalCitation": "Lagrum",
+          "created": "Skapad",
+          "archive": "Arkiveras"
+        },
+        "rows": {
+          "confidential": "Konfidentiellt",
+          "public": "Publikt",
+          "by": "av",
+          "yes": "Ja",
+          "no": "Nej"
+        }
+      }
+    },
+    "files": {
+      "header": {
+        "single": "Ingående fil",
+        "multiple": "Ingående filer"
+      },
+      "rows": {
+        "filesize": "filstorlek",
+        "download_document": "Hämta dokument"
+        
+      }
+    },
+    "metadata": {
+      "header": {
+        "metadata": "Metadata",
+        "hide": "dölj",
+        "show": "visa"
+        
+      }
+    }
+  },
+  "buttons": {
+    "close": "Stäng"
+  }
 }
