@@ -1,27 +1,27 @@
 {
-	"title": "sök dokument",
-	"description": "Här kan du söka efter dokument som är knutna till ett personnummer",
-	"search": "Sök", 
-	"ongoing_search": "Söker",
-	"include_confidential": "Inkludera sekretessbelagda dokument i sökningen",
-	"no_matching_documents": "Inga matchande dokument hittades",
-	"matching_documents": "dokument matchar personnummer",
-	"displaying_page": "visar sida",
-	"of": "av",
-	"errors": {
-		"invalidLegalId": "Du har angivit ett felaktigt personnummer eller organisationsnummer (för personnummer gäller YYYYMMDDNNNN eller YYYYMMDD-NNNN och för organisationsnummer gäller NNNNNNNNNN eller NNNNNN-NNNN)",
-		"legalIdNotTranslatable": "Angivet personnummer eller organisationsnummer går ej översätta",
-		"errorSearchingDocuments": "Ett fel inträffade vid sökning av matchande dokument"
-	},
-  	"searchtable_headers": {
-	  	"diarynumber": "Dokument-nummer",
-	  	"description": "Beskrivning",
-	  	"confidentiality": "Känslighet",
-	  	"revision": "Revision",
-	  	"created": "Skapat",
-	  	"created_by": "Skapat av"
-  	},
-	"document_table_title": "Dokument som mathcar sökning",
-  	"confidential": "Konfidentiellt",
-  	"public": "Publikt"
+  "title": "sök dokument",
+  "description": "Sök efter dokument knutna till ett personnummer",
+  "search": "Sök", 
+  "ongoing_search": "Söker",
+  "include_confidential": "Inkludera sekretessbelagda dokument i sökningen",
+  "no_matching_documents": "Inga matchande dokument hittades",
+  "matching_documents": "dokument matchar personnummer",
+  "displaying_page": "visar sida",
+  "of": "av",
+  "errors": {
+    "invalidLegalId": "Du har angivit ett felaktigt personnummer eller organisationsnummer (för personnummer gäller YYYYMMDDNNNN eller YYYYMMDD-NNNN och för organisationsnummer gäller NNNNNNNNNN eller NNNNNN-NNNN)",
+    "legalIdNotTranslatable": "Angivet personnummer eller organisationsnummer går ej översätta",
+    "errorSearchingDocuments": "Ett fel inträffade vid sökning av matchande dokument"
+  },
+    "searchtable_headers": {
+      "diarynumber": "Dokument-nummer",
+      "description": "Beskrivning",
+      "confidentiality": "Känslighet",
+      "revision": "Revision",
+      "created": "Skapat",
+      "created_by": "Skapat av"
+    },
+  "document_table_title": "Dokument som mathcar sökning",
+    "confidential": "Konfidentiellt",
+    "public": "Publikt"
 }

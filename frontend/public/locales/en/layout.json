@@ -1,0 +1,22 @@
+{
+  "header": {
+    "goto_content": "Go to content"
+  },
+  "cookies": {
+    "title": "Cookies for {{app}}",
+    "description": "We are using cookies to give you a better expirence, collect statistics and to enable certain funcationality on the web site.",
+    "read_more": "Read more on how we are using cookies",
+    "necessary": {
+      "displayName": "Necessary cookies",
+      "description": "These cookies are necessary for the application to work and can not be disabled."
+    },
+    "func": {
+      "displayName": "Functional cookies",
+      "description": "These cookies will enable enhanced functionality on the web site."
+    },
+    "stats": {
+      "displayName": "Cookies for statistics",
+      "description": "These cookies allow us to count visitation statistics, to let us measure and enhance the performance of the web site."
+    }
+  }
+}

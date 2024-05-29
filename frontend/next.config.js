@@ -24,7 +24,14 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer({
   output: 'standalone',
-  i18n,
+  i18n: {
+    // These are all the locales you want to support in
+    // your application
+    locales: ['sv', 'en'],
+    // This is the default locale you want to be used when visiting
+    // a non-locale prefixed path e.g. `/hello`
+    defaultLocale: 'sv',
+  },
   images: {
     domains: [process.env.DOMAIN_NAME],
     formats: ['image/avif', 'image/webp'],
