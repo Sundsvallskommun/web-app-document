@@ -64,7 +64,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
         <table>
           <tr>
             <td>
-                  {t('dialog_documentdetails:sections.common.table.headers.description')}
+              {t('dialog_documentdetails:sections.common.table.headers.description')}
             </td>
             <td>
               {document.description}
@@ -72,7 +72,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           </tr>
           <tr>
             <td>
-                  {t('dialog_documentdetails:sections.common.table.headers.sensitivity')}
+              {t('dialog_documentdetails:sections.common.table.headers.sensitivity')}
             </td>
             <td>
               {document.confidentiality?.confidential && <p>{t('dialog_documentdetails:sections.common.table.rows.confidential')}</p>}
@@ -83,7 +83,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           document.confidentiality?.legalCitation &&
           <tr>
             <td>
-                  {t('dialog_documentdetails:sections.common.table.headers.legalCitation')}
+              {t('dialog_documentdetails:sections.common.table.headers.legalCitation')}
             </td>
             <td>
               {document.confidentiality.legalCitation}
@@ -100,7 +100,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           </tr>
           <tr>
             <td>
-                  <p>{t('dialog_documentdetails:sections.common.table.headers.revision')}</p>
+              <p>{t('dialog_documentdetails:sections.common.table.headers.revision')}</p>
             </td>
             <td>
               {document.revision}
@@ -108,7 +108,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           </tr>
           <tr>
             <td>
-                  {t('dialog_documentdetails:sections.common.table.headers.created')}
+              {t('dialog_documentdetails:sections.common.table.headers.created')}
             </td>
             <td>
               {dayjs(document.created).format('YYYY-MM-DD HH:mm')} {t('dialog_documentdetails:sections.common.table.rows.by')} {document.createdBy}
@@ -116,7 +116,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           </tr>
           <tr>
             <td>
-                  {t('dialog_documentdetails:sections.common.table.headers.archive')}
+              {t('dialog_documentdetails:sections.common.table.headers.archive')}
             </td>
             <td>
               {document.archive}
