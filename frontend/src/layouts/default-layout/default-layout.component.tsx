@@ -78,7 +78,7 @@ export default function DefaultLayout({
                 alt="Svenska"
                 htmlHeight="42"
                 htmlWidth="26"
-                src={process.env.NEXT_PUBLIC_BASE_PATH + '/png/se.png'}
+                src={process.env.NEXT_PUBLIC_BASEPATH + '/png/se.png'}
               />
             </Button>
 
@@ -87,7 +87,7 @@ export default function DefaultLayout({
                 alt="Engelska"
                 htmlHeight="42"
                 htmlWidth="26"
-                src={process.env.NEXT_PUBLIC_BASE_PATH + '/png/en.png'}
+                src={process.env.NEXT_PUBLIC_BASEPATH + '/png/en.png'}
               />
             </Button>
 

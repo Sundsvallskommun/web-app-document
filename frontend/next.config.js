@@ -36,9 +36,9 @@ module.exports = withBundleAnalyzer({
     domains: [process.env.DOMAIN_NAME],
     formats: ['image/avif', 'image/webp'],
   },
-  basePath: process.env.BASE_PATH,
+  basePath: process.env.NEXT_PUBLIC_BASEPATH || '',
   sassOptions: {
-    prependData: `$basePath: '${process.env.BASE_PATH}';`,
+    prependData: `$basePath: '${process.env.NEXT_PUBLIC_BASEPATH}';`,
   },
   async rewrites() {
     return [{ source: '/napi/:path*', destination: '/api/:path*' }];
