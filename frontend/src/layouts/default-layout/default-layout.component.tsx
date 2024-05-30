@@ -71,17 +71,26 @@ export default function DefaultLayout({
         logoLinkOnClick={handleLogoClick}
         LogoLinkWrapperComponent={<NextLink legacyBehavior href={logoLinkHref} passHref />}
       >
-      
-        <div className='language-bar'>
+        <div className="language-bar">
           <Button.Group>
             <Button iconButton onClick={() => handleLanguageChange('sv')}>
-              <Image alt='Svenska' htmlHeight='42' htmlWidth='26' src='/png/se.png'/>
+              <Image
+                alt="Svenska"
+                htmlHeight="42"
+                htmlWidth="26"
+                src={process.env.NEXT_PUBLIC_BASE_PATH + '/png/se.png'}
+              />
             </Button>
 
             <Button iconButton onClick={() => handleLanguageChange('en')}>
-              <Image alt='Engelska' htmlHeight='42' htmlWidth='26' src='/png/en.png'/>
+              <Image
+                alt="Engelska"
+                htmlHeight="42"
+                htmlWidth="26"
+                src={process.env.NEXT_PUBLIC_BASE_PATH + '/png/en.png'}
+              />
             </Button>
-            
+
             {user.name ?
               <Button>
                 <NextLink href={`/logout`}>
@@ -91,10 +100,8 @@ export default function DefaultLayout({
                 </NextLink>
               </Button>
             : ''}
-            
           </Button.Group>
         </div>
-      
       </Header>
 
       {preContent && preContent}
