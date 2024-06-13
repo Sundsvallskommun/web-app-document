@@ -1,11 +1,12 @@
 {
   "title": "sök dokument",
-  "description": "Sök efter dokument knutna till ett personnummer",
+  "description": "Sök efter dokument som refererar till en person eller organisation",
   "search": "Sök", 
   "ongoing_search": "Söker",
   "include_confidential": "Inkludera sekretessbelagda dokument i sökningen",
   "no_matching_documents": "Inga matchande dokument hittades",
-  "matching_documents": "dokument matchar personnummer",
+  "documents_per_page": "dokument per sida visas",
+  "matching_documents": "dokument refererar till personnummer",
   "displaying_page": "visar sida",
   "of": "av",
   "errors": {
@@ -17,7 +18,6 @@
       "diarynumber": "Dokument-nummer",
       "description": "Beskrivning",
       "confidentiality": "Känslighet",
-      "revision": "Revision",
       "created": "Skapat",
       "created_by": "Skapat av"
     },

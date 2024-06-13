@@ -55,6 +55,15 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
     });
   };
 
+  const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const niceBytes = (x: number): string => {
+    let l = 0, n = parseInt(x.toString(), 10) || 0;
+    while(n >= 1024 && ++l){
+      n = n/1024;
+    }
+    return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
+  };
+
   return (
     <Dialog show={open} className="md:min-w-[100rem]">
     {document &&
@@ -136,7 +145,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
               {documentData.fileName}
             </td>
             <td>
-              {t('dialog_documentdetails:sections.files.rows.filesize')} {documentData.fileSizeInBytes} bytes
+              {t('dialog_documentdetails:sections.files.rows.filesize')} {niceBytes(documentData.fileSizeInBytes)}
             </td>
             <td>
               <Link

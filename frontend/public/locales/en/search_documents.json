@@ -1,11 +1,12 @@
 {
   "title": "search document",
-  "description": "Search for documents connected to a legal id",
+  "description": "Search for documents that refer to a person or organization",
   "search": "Search", 
   "ongoing_search": "Searching",
   "include_confidential": "Include confidential documents in the search",
   "no_matching_documents": "No matching documents was found",
-  "matching_documents": "documents matches the legal id",
+  "documents_per_page": "documents per page are displayed",
+  "matching_documents": "documents refer to legal id",
   "displaying_page": "showing page",
   "of": "of",
   "errors": {
@@ -17,7 +18,6 @@
       "diarynumber": "Document number",
       "description": "Description",
       "confidentiality": "Confidentiality",
-      "revision": "Revision",
       "created": "Created",
       "created_by": "Created by"
     },
