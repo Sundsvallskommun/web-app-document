@@ -49,8 +49,8 @@ export const SearchDocumentPage: React.FC = () => {
 
   const searchIfEnterPressed = (pressedKey: string) => {
     if (pressedKey && pressedKey === 'Enter') {
-	  search();
-	}
+      search();
+    }
   };
   
   const search = () => {
