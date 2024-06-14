@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { shallow } from 'zustand/shallow';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { capitalize } from 'underscore.string';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useCallback } from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Link, Button, Checkbox, Select, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
 import { Document, translateLegalId, searchDocuments } from '@services/document-service/search-document-service'
@@ -14,7 +14,7 @@ import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetail
 
 export const SearchDocumentPage: React.FC = () => {
   const sizes = [5,10,15,20]
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(10);
   const user = useUserStore((s) => s.user, shallow);
   const { t } = useTranslation();
   const [isInvalidInput, setIsInvalidInput] = useState<boolean>(false);
@@ -24,6 +24,7 @@ export const SearchDocumentPage: React.FC = () => {
   const [legalId, setLegalId] = useState<string>(null);
   const [isIncludeConfidential, setIsIncludeConfidential] = useState<boolean>(false);
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [sortObject, setSortObject] = useState<{ [key: string]: string }>({'registrationNumber': 'desc'});
   const [selectedDocument, setSelectedDocument] = useState<Document>(null);
   const [paginationData, setPaginationData] = useState<{
     page: number;
@@ -87,7 +88,7 @@ export const SearchDocumentPage: React.FC = () => {
   };
   
   const loadDocuments = (partyId: string, page: number) => {
-    searchDocuments(partyId, isIncludeConfidential, page, pageSize)
+    searchDocuments(partyId, isIncludeConfidential, page, pageSize, sortObject)
       .then((res) => {
         setDocuments(res.documents);
         setPaginationData({
@@ -137,6 +138,20 @@ export const SearchDocumentPage: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSize]);
   
+  const sortHandler = useCallback((sortColumn: number, sortAscending: boolean) => {
+    const sortColumns:string[] = ['registrationNumber', 'description', 'confidentiality.confidential', 'created', 'createdBy'];
+    const columName = sortColumns[sortColumn];
+    const new_sort = {[columName]: sortAscending ? 'asc' : 'desc'}; 
+    setSortObject(new_sort);
+  }, []); 
+
+  useEffect(() => {
+    if (legalId) {
+      switchPage(paginationData?.page);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortObject]);
+  
   const labels = [
     {
       label: t(`search_documents:searchtable_headers.diarynumber`),
@@ -164,7 +179,7 @@ export const SearchDocumentPage: React.FC = () => {
       screenReaderOnly: false
     }
   ];
-
+  
   const headers: ZebraTableHeader[] = labels.map((l, idx) => ({
     element: (
       <span className="font-bold" key={`mh${idx}`}>{l.label}</span>
@@ -302,8 +317,9 @@ export const SearchDocumentPage: React.FC = () => {
                 pageSize={pageSize}
                 headers={headers}
                 rows={rows}
-                tableSortable={false}
-                defaultSort={{ idx: 1, sortMode: false }}
+                tableSortable={true}
+                sortHandler={sortHandler}
+                defaultSort={{ idx: 0, sortMode: false }}
               />
 
               {paginationData?.totalPages > 1 && (
