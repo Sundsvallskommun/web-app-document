@@ -28,9 +28,14 @@ export const searchDocuments: (
   includeConfidential: boolean,
   page?: number,
   size?: number,
-) => Promise<DocumentSearchResult> = async (partyId, includeConfidential, page = 0, size = 10) => {
-  const url = `document?query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`;
+  sort?: { [key: string]: string },
+) => Promise<DocumentSearchResult> = async (partyId, includeConfidential, page = 0, size = 10, sort) => {
 
+  let url = `document?query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`
+  Object.entries(sort).forEach(([key, value]) => {
+    url = url + `&sort=${key},${value}`;
+  });
+    
   return apiService
     .get<ApiDocumentSearchResult>(url)
     .then((res) => {

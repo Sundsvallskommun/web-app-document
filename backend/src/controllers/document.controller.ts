@@ -56,11 +56,13 @@ export class DocumentController {
     @QueryParam('includeConfidential') includeConfidential: boolean,
     @QueryParam('page') page: number,
     @QueryParam('size') size: number,
+    @QueryParam('sort') sort: string,
   ): Promise<ApiDocumentSearchResult> {
     const url =
       this.baseUrl +
       `documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}` +
-      `&onlyLatestRevision=true&sort=registrationNumber,desc&sort=revision,desc`;
+      `&sort=${sort}` +
+      `&onlyLatestRevision=true`;
 
     const res = await this.apiService.get<ApiDocumentSearchResult>({ url }).catch(e => {
       logger.error('Error when retrieving documents matching search parameter:', e);
