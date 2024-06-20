@@ -83,49 +83,42 @@ const samlStrategy = new Strategy(
         message: 'Missing SAML profile',
       });
     }
-    const { givenName, surname, citizenIdentifier, username } = profile;
+    // Depending on using Onegate or ADFS for federation the profile data looks a bit different
+    // Here we use the null coalescing operator (??) to handle both cases.
+    // (A switch from Onegate to ADFS was done on august 6 2023 due to problems in MobilityGuard.)
+    //
 
-    if (!givenName || !surname || !citizenIdentifier) {
-      return done({
+    const givenName = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ?? profile['givenName'];
+    const sn = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] ?? profile['sn'];
+    const email = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ?? profile['email'];
+    const groups = profile['http://schemas.xmlsoap.org/claims/Group']?.join(',') ?? profile['groups'];
+    const username = profile['urn:oid:0.9.2342.19200300.100.1.1'];
+
+    if (!givenName || !sn || !email || !groups || !username) {
+      return done(null, null, {
         name: 'SAML_MISSING_ATTRIBUTES',
         message: 'Missing profile attributes',
       });
     }
 
-    //   const groupList: ADRole[] =
-    //   groups !== undefined
-    //     ? (groups
-    //         .split(',')
-    //         .map(x => x.toLowerCase())
-    //         .filter(x => x.includes('sg_appl_app_')) as ADRole[])
-    //     : [];
-
-    // const appGroups: ADRole[] = groupList.length > 0 ? groupList : groupList.concat('sg_appl_app_read');
-
     try {
-      // const personNumber = profile.citizenIdentifier;
-      // const citizenResult = await apiService.get<any>({ url: `citizen/2.0/${personNumber}/guid` });
-      // const { data: personId } = citizenResult;
-
-      // if (!personId) {
-      //   return done({
-      //     name: 'SAML_CITIZEN_FAILED',
-      //     message: 'Failed to fetch user from Citizen API',
-      //   });
-      // }
-
-      const findUser: User = {
-        // personId: personId,
-        username: username,
-        name: `${givenName} ${surname}`,
+      const findUser = {
+        name: `${givenName} ${sn}`,
         givenName: givenName,
-        surname: surname,
+        surname: sn,
+        username: username,
+        email: email,
+        groups: groups.split(','),
       };
+
+      logger.info('Found user:', findUser);
 
       done(null, findUser);
     } catch (err) {
       if (err instanceof HttpException && err?.status === 404) {
-        // Handle missing person form Citizen
+        // TODO: Handle missing person form Citizen?
+        logger.error('Error when calling Citizen:');
+        logger.error(err);
       }
       done(err);
     }
