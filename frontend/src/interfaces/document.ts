@@ -1,3 +1,8 @@
+export interface MunicipalityInterface {
+  municipalityId: string;
+  name: string;
+}
+
 export interface ApiDocumentSearchResult {
     documents: ApiDocument[];
     _meta: {

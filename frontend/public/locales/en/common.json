@@ -1,5 +1,7 @@
 {
   "welcome": "Welcome",
   "login": "log in",
-  "logout": "log out"
+  "logout": "log out",
+  "select-municipality": "Choose municipality",
+  "search-placeholder": "Type to filter"
 }

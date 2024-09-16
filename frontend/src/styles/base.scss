@@ -22,6 +22,18 @@ body {
   flex: 1 0 auto;
 }
 
+.muncipalityDropdown {
+  position: absolute;
+  top: -70px;
+  right: 300px;
+}
+
+.sk-form-combobox {
+  position: relative;
+  top: -4px;
+  margin-right: 10px;
+}
+
 button.input-and-button {
     border-top-left-radius: unset;
 	border-bottom-left-radius: unset;

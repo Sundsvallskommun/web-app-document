@@ -7,13 +7,16 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { capitalize } from 'underscore.string';
 import { Fragment, useState, useEffect, useCallback } from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { Link, Button, Checkbox, Select, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
+import { Link, Button, Checkbox, Combobox, Select, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
 import { Document, translateLegalId, searchDocuments } from '@services/document-service/search-document-service'
+import { getMunicipalities, Municipality } from '@services/municipality-service/municipality-service';
 import dayjs from 'dayjs';
 import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetails';
 
 export const SearchDocumentPage: React.FC = () => {
   const sizes = [5,10,15,20]
+  const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+  const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality>({municipalityId: '2281', name: 'Sundsvalls kommun'});
   const [pageSize, setPageSize] = useState<number>(10);
   const user = useUserStore((s) => s.user, shallow);
   const { t } = useTranslation();
@@ -32,6 +35,12 @@ export const SearchDocumentPage: React.FC = () => {
     totalElements: number;
   }|null>(null);
 
+  const handleSelectedMunicipalityId: React.ComponentProps<typeof Combobox.Input>['onChange'] = e => {
+    if (e?.target?.value) {
+      setSelectedMunicipality(municipalities.find(m => m.municipalityId === e.target.value));
+    }
+  };
+  
   const openDetails = (index: number) => {
     setSelectedDocument(documents[index]);
     setIsDetailOpen(true);
@@ -88,7 +97,7 @@ export const SearchDocumentPage: React.FC = () => {
   };
   
   const loadDocuments = (partyId: string, page: number) => {
-    searchDocuments(partyId, isIncludeConfidential, page, pageSize, sortObject)
+    searchDocuments(selectedMunicipality.municipalityId, partyId, isIncludeConfidential, page, pageSize, sortObject)
       .then((res) => {
         setDocuments(res.documents);
         setPaginationData({
@@ -99,7 +108,7 @@ export const SearchDocumentPage: React.FC = () => {
 
         if (res.totalRecords < 1) {
           snackBar({
-            message: t(`search_documents:no_matching_documents`),
+		    message: `${t('search_documents:no_matching_documents-prefix')} ${selectedMunicipality.name} ${t('search_documents:no_matching_documents-suffix')}`,
             status: 'info',
             position: 'top',
             closeable: false
@@ -151,6 +160,21 @@ export const SearchDocumentPage: React.FC = () => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortObject]);
+  
+  useEffect(() => {
+    setSelectedMunicipality(municipalities.find(m => m.municipalityId === '2281')); // Hardcoded to Sundsvalls kommun, in future it might be determined from userinformation in AD
+    console.log(selectedMunicipality);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [municipalities]);
+
+  useEffect(() => {
+    getMunicipalities()
+      .then(res => {
+		console.log(res);
+        setMunicipalities(res);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const labels = [
     {
@@ -238,7 +262,22 @@ export const SearchDocumentPage: React.FC = () => {
 
   return (
     <DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - ${t('search_documents:title')}`}>
-
+      <div className='muncipalityDropdown'>
+        <Combobox
+          placeholder={t('common:select-municipality')}
+          searchPlaceholder={t('common:search-placeholder')}
+          value={selectedMunicipality?.municipalityId}
+          multiple={false}
+          onChange={(e) => handleSelectedMunicipalityId(e)}
+        >
+          <Combobox.List>
+            {municipalities.map(item => <Combobox.Option key={`cb-municipality-${item.municipalityId.toString()}`} value={item.municipalityId.toString()}>
+              {item.name}
+            </Combobox.Option>)}
+          </Combobox.List>
+          
+        </Combobox>
+      </div>
       <DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 
       <Main>
@@ -247,7 +286,9 @@ export const SearchDocumentPage: React.FC = () => {
             {capitalize(`${t('common:welcome')} ${user.name ? user.name : ''}!`)}
           </h3>
           <p style={{ marginBottom: '2em'}}>
-          	{t('search_documents:description')}
+          	{t('search_documents:description-prefix')}
+          	&nbsp;{selectedMunicipality?.name}&nbsp;
+          	{t('search_documents:description-suffix')}
           </p>
           
           <p>
@@ -264,7 +305,7 @@ export const SearchDocumentPage: React.FC = () => {
               placeholder='YYYYMMDD-NNNN'
               disabled={isLoading}
               className={isInvalidInput ? 'input-and-button border border-error' : 'input-and-button'}
-              autoFocus={'true'}
+              autoFocus={true}
               onChange={(e) => changeInput(e.target.value)}
               onKeyDown={(e) => searchIfEnterPressed(e.key)}
               data-cy="search-legalId"
@@ -285,7 +326,6 @@ export const SearchDocumentPage: React.FC = () => {
                 {t('search_documents:errors.invalidLegalId')}
               </div>
             }
-
           </p>
           
           <p>
