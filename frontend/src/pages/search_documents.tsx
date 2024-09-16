@@ -108,7 +108,7 @@ export const SearchDocumentPage: React.FC = () => {
 
         if (res.totalRecords < 1) {
           snackBar({
-		    message: `${t('search_documents:no_matching_documents-prefix')} ${selectedMunicipality.name} ${t('search_documents:no_matching_documents-suffix')}`,
+            message: `${t('search_documents:no_matching_documents-prefix')} ${selectedMunicipality.name} ${t('search_documents:no_matching_documents-suffix')}`,
             status: 'info',
             position: 'top',
             closeable: false
@@ -273,9 +273,9 @@ export const SearchDocumentPage: React.FC = () => {
               {item.name}
             </Combobox.Option>)}
           </Combobox.List>
-          
         </Combobox>
       </div>
+      
       <DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>
 
       <Main>
