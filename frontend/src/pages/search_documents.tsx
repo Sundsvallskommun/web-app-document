@@ -16,7 +16,7 @@ import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetail
 export const SearchDocumentPage: React.FC = () => {
   const sizes = [5,10,15,20]
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
-  const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality>({municipalityId: '2281', name: 'Sundsvalls kommun'});
+  const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality>(null);
   const [pageSize, setPageSize] = useState<number>(10);
   const user = useUserStore((s) => s.user, shallow);
   const { t } = useTranslation();
@@ -162,15 +162,13 @@ export const SearchDocumentPage: React.FC = () => {
   }, [sortObject]);
   
   useEffect(() => {
-    setSelectedMunicipality(municipalities.find(m => m.municipalityId === '2281')); // Hardcoded to Sundsvalls kommun, in future it might be determined from userinformation in AD
-    console.log(selectedMunicipality);
+    setSelectedMunicipality(municipalities.find(m => m.municipalityId === '2281')); // Hardcoded to Sundsvalls kommun, in the future we might able to determine it from userinformation in AD
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [municipalities]);
 
   useEffect(() => {
     getMunicipalities()
       .then(res => {
-		console.log(res);
         setMunicipalities(res);
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
