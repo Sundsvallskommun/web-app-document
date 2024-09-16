@@ -7,7 +7,7 @@ Dessa APIer används i projektet, applikationsanvändaren i WSO2 måste prenumer
 | API             | Version |
 | --------------- | ------: |
 | Party           |     1.0 |
-| Document        |     2.0 |
+| Document        |     3.0 |
 
 ## Utveckling
 

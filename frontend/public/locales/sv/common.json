@@ -1,5 +1,7 @@
 {
   "welcome": "välkommen",
   "login": "logga in",
-  "logout": "logga ut"
+  "logout": "logga ut",
+  "select-municipality": "Välj kommun",
+  "search-placeholder": "Skriv för att filtrera"
 }

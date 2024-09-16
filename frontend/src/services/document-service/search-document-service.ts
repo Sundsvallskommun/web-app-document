@@ -24,14 +24,14 @@ export const translateLegalId: ( legalId: string ) => Promise<string> = async (l
 };
 
 export const searchDocuments: (
+  municipalityId: string,
   partyId: string,
   includeConfidential: boolean,
   page?: number,
   size?: number,
   sort?: { [key: string]: string },
-) => Promise<DocumentSearchResult> = async (partyId, includeConfidential, page = 0, size = 10, sort) => {
-
-  let url = `document?query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`
+) => Promise<DocumentSearchResult> = async (municipalityId, partyId, includeConfidential, page = 0, size = 10, sort) => {
+  let url = `document?municipalityId=${municipalityId}&query=%2A${partyId}%2A&includeConfidential=${includeConfidential}&page=${page}&size=${size}`
   Object.entries(sort).forEach(([key, value]) => {
     url = url + `&sort=${key},${value}`;
   });

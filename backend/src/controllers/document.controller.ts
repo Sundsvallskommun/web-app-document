@@ -47,11 +47,12 @@ interface ApiDocumentData {
 @Controller()
 export class DocumentController {
   private apiService = new ApiService();
-  private baseUrl = 'document/2.0/';
+  private baseUrl = 'document/3.0/';
 
   @Get('/document')
   @OpenAPI({ summary: 'Returns documents matching sent in query' })
   async searchDocuments(
+    @QueryParam('municipalityId') municipalityId: string,
     @QueryParam('query') query: string,
     @QueryParam('includeConfidential') includeConfidential: boolean,
     @QueryParam('page') page: number,
@@ -60,7 +61,8 @@ export class DocumentController {
   ): Promise<ApiDocumentSearchResult> {
     const url =
       this.baseUrl +
-      `documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}` +
+      municipalityId +
+      `/documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}` +
       `&sort=${sort}` +
       `&onlyLatestRevision=true`;
 

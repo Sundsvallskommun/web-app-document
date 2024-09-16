@@ -2,7 +2,6 @@ import { CookieConsent, Button, Image, Footer, Header, Link } from '@sk-web-gui/
 import { useUserStore } from '@services/user-service/user-service';
 import { shallow } from 'zustand/shallow';
 import { capitalize } from 'underscore.string';
-
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';

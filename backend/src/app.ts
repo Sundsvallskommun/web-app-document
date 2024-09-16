@@ -44,7 +44,6 @@ import { HttpException } from './exceptions/HttpException';
 import { join } from 'path';
 import { isValidUrl } from './utils/util';
 import { additionalConverters } from './utils/custom-validation-classes';
-import { User } from './interfaces/users.interface';
 
 const SessionStoreCreate = SESSION_MEMORY ? createMemoryStore(session) : createFileStore(session);
 const sessionTTL = 4 * 24 * 60 * 60;
