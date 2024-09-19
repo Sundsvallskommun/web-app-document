@@ -7,14 +7,18 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { capitalize } from 'underscore.string';
 import { Fragment, useState, useEffect, useCallback } from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { Link, Button, Checkbox, Combobox, Select, useSnackbar, Pagination, Input, Spinner, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
+import { Link, Button, Checkbox, Combobox, Select, useSnackbar, Pagination, Input, Spinner, Image, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
 import { Document, translateLegalId, searchDocuments } from '@services/document-service/search-document-service'
 import { getMunicipalities, Municipality } from '@services/municipality-service/municipality-service';
 import dayjs from 'dayjs';
 import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetails';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 export const SearchDocumentPage: React.FC = () => {
   const sizes = [5,10,15,20]
+  const router = useRouter();
+  const { pathname, asPath, query } = router;  
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality>(null);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -38,9 +42,15 @@ export const SearchDocumentPage: React.FC = () => {
   const handleSelectedMunicipalityId: React.ComponentProps<typeof Combobox.Input>['onChange'] = e => {
     if (e?.target?.value) {
       setSelectedMunicipality(municipalities.find(m => m.municipalityId === e.target.value));
+      setDocuments([]);
+      setPaginationData(null);
     }
   };
   
+  const handleLanguageChange = (langValue: string) => {
+    router.push({ pathname, query }, asPath, { locale: langValue });
+  };
+
   const openDetails = (index: number) => {
     setSelectedDocument(documents[index]);
     setIsDetailOpen(true);
@@ -111,7 +121,8 @@ export const SearchDocumentPage: React.FC = () => {
             message: `${t('search_documents:no_matching_documents-prefix')} ${selectedMunicipality.name} ${t('search_documents:no_matching_documents-suffix')}`,
             status: 'info',
             position: 'top',
-            closeable: false
+            duration: 3000,
+            closeable: true
           });
         }
       })
@@ -260,7 +271,8 @@ export const SearchDocumentPage: React.FC = () => {
 
   return (
     <DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - ${t('search_documents:title')}`}>
-      <div className='muncipalityDropdown'>
+
+      <div className='customMenu'>
         <Combobox
           placeholder={t('common:select-municipality')}
           searchPlaceholder={t('common:search-placeholder')}
@@ -274,6 +286,39 @@ export const SearchDocumentPage: React.FC = () => {
             </Combobox.Option>)}
           </Combobox.List>
         </Combobox>
+
+        <div className="language-bar">
+          <Button.Group>
+            <Button iconButton onClick={() => handleLanguageChange('sv')}>
+              <Image
+                alt="Svenska"
+                htmlHeight="42"
+                htmlWidth="26"
+                src={process.env.NEXT_PUBLIC_BASEPATH + '/png/se.png'}
+              />
+            </Button>
+
+            <Button iconButton onClick={() => handleLanguageChange('en')}>
+              <Image
+                alt="Engelska"
+                htmlHeight="42"
+                htmlWidth="26"
+                src={process.env.NEXT_PUBLIC_BASEPATH + '/png/en.png'}
+              />
+            </Button>
+
+            {user.name ?
+              <Button>
+                <NextLink href={`/logout`}>
+                  <Link as="span" variant="link">
+                    {capitalize(t('common:logout'))}
+                  </Link>
+                </NextLink>
+              </Button>
+            : ''}
+          </Button.Group>
+        </div>
+
       </div>
       
       <DialogDocumentDetails open={isDetailOpen} document={selectedDocument} onClose={closeHandler}/>

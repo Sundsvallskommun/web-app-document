@@ -22,10 +22,18 @@ body {
   flex: 1 0 auto;
 }
 
-.muncipalityDropdown {
+.customMenu {
   position: absolute;
   top: -70px;
-  right: 300px;
+  right: 30px;
+  display: flex;
+  flex-direction: row;
+}
+
+.language-bar {
+  position: relative;
+  bottom: 6px;
+  left: 10px;
 }
 
 .sk-form-combobox {
