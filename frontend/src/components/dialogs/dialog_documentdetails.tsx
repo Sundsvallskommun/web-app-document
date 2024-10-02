@@ -36,10 +36,6 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
   };
   
   const fetchFile = ( documentData : ApiDocumentData ) => {
-	console.log('hej');
-	console.log(document);
-	console.log(documentData);
-	
     fetchDocumentFile(document.municipalityId, document.registrationNumber, documentData.id, document.confidentiality?.confidential || false)
       .then((res) => {
         const uri = `data:${documentData.mimeType};base64,${res}`;
