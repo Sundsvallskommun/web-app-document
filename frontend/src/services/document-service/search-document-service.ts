@@ -85,15 +85,16 @@ export const mapApiDocumentToDocument: (e: ApiDocument) => Document = (e) => {
 };
 
 export const fetchDocumentFile: (
+  municipalityId: string,
   registrationNumber: string, 
   documentDataId: string, 
   includeConfidential: boolean,
-) => Promise<string> = async (registrationNumber, documentDataId, includeConfidential) => {
+) => Promise<string> = async (municipalityId, registrationNumber, documentDataId, includeConfidential) => {
   if (!registrationNumber || !documentDataId) {
     console.error('RegistrationNumber or documentDataId missing, cannot fetch.');
     throw new Error('Missing vital input for retriieving document data');
   }
-  const url = `document/${registrationNumber}/file/${documentDataId}?includeConfidential=${includeConfidential}`;
+  const url = `document/${registrationNumber}/file/${documentDataId}?municipalityId=${municipalityId}&includeConfidential=${includeConfidential}`;
   return apiService
     .get<string>(url)
     .then((res) => res.data)

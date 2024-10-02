@@ -36,7 +36,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
   };
   
   const fetchFile = ( documentData : ApiDocumentData ) => {
-    fetchDocumentFile(document.registrationNumber, documentData.id, document.confidentiality?.confidential || false)
+    fetchDocumentFile(document.municipalityId, document.registrationNumber, documentData.id, document.confidentiality?.confidential || false)
       .then((res) => {
         const uri = `data:${documentData.mimeType};base64,${res}`;
         const link = window.document.createElement('a');
@@ -71,96 +71,100 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
         <h6>{t('dialog_documentdetails:header')} {document.registrationNumber}</h6>
         <Divider.Section>{t('dialog_documentdetails:sections.common.header')}</Divider.Section>
         <table>
-          <tr>
-            <td>
-              {t('dialog_documentdetails:sections.common.table.headers.description')}
-            </td>
-            <td>
-              {document.description}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              {t('dialog_documentdetails:sections.common.table.headers.sensitivity')}
-            </td>
-            <td>
-              {document.confidentiality?.confidential && <p>{t('dialog_documentdetails:sections.common.table.rows.confidential')}</p>}
-              {!document.confidentiality?.confidential && <p>{t('dialog_documentdetails:sections.common.table.rows.public')}</p>}
-            </td>
-          </tr>
-          {document.confidentiality?.confidential &&
-          document.confidentiality?.legalCitation &&
-          <tr>
-            <td>
-              {t('dialog_documentdetails:sections.common.table.headers.legalCitation')}
-            </td>
-            <td>
-              {document.confidentiality.legalCitation}
-            </td>
-          </tr>
-          }
-          <tr>
-            <td>
-              &nbsp;
-            </td>
-            <td>
-              &nbsp;
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <p>{t('dialog_documentdetails:sections.common.table.headers.revision')}</p>
-            </td>
-            <td>
-              {document.revision}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              {t('dialog_documentdetails:sections.common.table.headers.created')}
-            </td>
-            <td>
-              {dayjs(document.created).format('YYYY-MM-DD HH:mm')} {t('dialog_documentdetails:sections.common.table.rows.by')} {document.createdBy}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              {t('dialog_documentdetails:sections.common.table.headers.archive')}
-            </td>
-            <td>
-              {document.archive}
-              {document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.yes')}</p>}
-              {!document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.no')}</p>}
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>
+                {t('dialog_documentdetails:sections.common.table.headers.description')}
+              </td>
+              <td>
+                {document.description}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {t('dialog_documentdetails:sections.common.table.headers.sensitivity')}
+              </td>
+              <td>
+                {document.confidentiality?.confidential && <p>{t('dialog_documentdetails:sections.common.table.rows.confidential')}</p>}
+                {!document.confidentiality?.confidential && <p>{t('dialog_documentdetails:sections.common.table.rows.public')}</p>}
+              </td>
+            </tr>
+            {document.confidentiality?.confidential &&
+            document.confidentiality?.legalCitation &&
+            <tr>
+              <td>
+                {t('dialog_documentdetails:sections.common.table.headers.legalCitation')}
+              </td>
+              <td>
+                {document.confidentiality.legalCitation}
+              </td>
+            </tr>
+            }
+            <tr>
+              <td>
+                &nbsp;
+              </td>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>{t('dialog_documentdetails:sections.common.table.headers.revision')}</p>
+              </td>
+              <td>
+                {document.revision}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {t('dialog_documentdetails:sections.common.table.headers.created')}
+              </td>
+              <td>
+                {dayjs(document.created).format('YYYY-MM-DD HH:mm')} {t('dialog_documentdetails:sections.common.table.rows.by')} {document.createdBy}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {t('dialog_documentdetails:sections.common.table.headers.archive')}
+              </td>
+              <td>
+                {document.archive}
+                {document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.yes')}</p>}
+                {!document.archive && <p>{t('dialog_documentdetails:sections.common.table.rows.no')}</p>}
+              </td>
+            </tr>
+          </tbody>
         </table>
         <Divider.Section>
           {document.documentData.length > 1 ? (<span>{t('dialog_documentdetails:sections.files.header.multiple')}</span>) : 
           (<span>{t('dialog_documentdetails:sections.files.header.single')}</span>)}
         </Divider.Section>
         <table>
-        {document.documentData.map((documentData) => (
-          <tr key={documentData.id}>
-            <td>
-              {documentData.fileName}
-            </td>
-            <td>
-              {t('dialog_documentdetails:sections.files.rows.filesize')} {niceBytes(documentData.fileSizeInBytes)}
-            </td>
-            <td>
-              <Link
-                onClick={() => fetchFile(documentData)}
-                href={'#'}
-                className="no-underline w-full lg:w-44"
-              >
-                <span className="relative leading-[2.8rem]">
-                  {t('dialog_documentdetails:sections.files.rows.download_document')}
-                  <OpenInNewIcon className="!w-[1.4rem] !h-[1.4rem] absolute -right-7 top-2" />
-                </span>
-              </Link>
-            </td>
-          </tr>
-        ))}
+          <tbody>
+          {document.documentData.map((documentData) => (
+            <tr key={documentData.id}>
+              <td>
+                {documentData.fileName}
+              </td>
+              <td>
+                {t('dialog_documentdetails:sections.files.rows.filesize')} {niceBytes(documentData.fileSizeInBytes)}
+              </td>
+              <td>
+                <Link
+                  onClick={() => fetchFile(documentData)}
+                  href={'#'}
+                  className="no-underline w-full lg:w-44"
+                >
+                  <span className="relative leading-[2.8rem]">
+                    {t('dialog_documentdetails:sections.files.rows.download_document')}
+                    <OpenInNewIcon className="!w-[1.4rem] !h-[1.4rem] absolute -right-7 top-2" />
+                  </span>
+                </Link>
+              </td>
+            </tr>
+          ))}
+          </tbody>
         </table>
         <Divider.Section>
           {t('dialog_documentdetails:sections.metadata.header.metadata')}&nbsp;
@@ -172,16 +176,18 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
         {metadataVisible && 
         <div>
           <table>
-          {document.metadataList.map((metaData, idx) => (
-            <tr key={metaData.key + idx}>
-              <td className="metadata">
-                {metaData.key}
-              </td>
-              <td>
-                <div className="metadata" dangerouslySetInnerHTML={{__html: format(metaData.value)}} />
-              </td>
-            </tr>
-          ))}
+            <tbody>
+            {document.metadataList.map((metaData, idx) => (
+              <tr key={metaData.key + idx}>
+                <td className="metadata">
+                  {metaData.key}
+                </td>
+                <td>
+                  <div className="metadata" dangerouslySetInnerHTML={{__html: format(metaData.value)}} />
+                </td>
+              </tr>
+            ))}
+            </tbody>
           </table>
         <div className="w-full px-lg mt-sm border-t border-gray-stroke border-thin"></div>
         </div>
