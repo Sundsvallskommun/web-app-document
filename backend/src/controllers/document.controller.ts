@@ -78,10 +78,12 @@ export class DocumentController {
   async fetchDocumentFile(
     @Param('registrationNumber') registrationNumber: string,
     @Param('documentDataId') documentDataId: string,
+    @QueryParam('municipalityId') municipalityId: string,
     @QueryParam('includeConfidential') includeConfidential: boolean,
     @Res() response: any,
   ): Promise<string> {
-    const url = this.baseUrl + `documents/${registrationNumber}/files/${documentDataId}?includeConfidential=${includeConfidential || false}`;
+    const url =
+      this.baseUrl + municipalityId + `/documents/${registrationNumber}/files/${documentDataId}?includeConfidential=${includeConfidential || false}`;
 
     const res = await this.apiService.get<ArrayBuffer>({ url, responseType: 'arraybuffer' }).catch(e => {
       logger.error('Error when retrieving document file:', e);
