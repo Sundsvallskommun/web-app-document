@@ -47,7 +47,7 @@ class ApiTokenService {
         data: qs.stringify({
           grant_type: 'client_credentials',
         }),
-        url: `${API_BASE_URL}/oauth2/token`,
+        url: `${API_BASE_URL}/token`,
       });
       const token = data as Token;
 
