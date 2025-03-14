@@ -7,14 +7,14 @@ import { Controller, Get, Param } from 'routing-controllers';
 export class PartyController {
   private apiService = new ApiService();
 
-  @Get('/party/:legalId/partyId')
+  @Get('/party/:municipalityId/:legalId/partyId')
   @OpenAPI({ summary: 'Return partyId for sent in legalId' })
-  async getPartyId(@Param('legalId') legalId: string): Promise<string | null> {
+  async getPartyId(@Param('municipalityId') municipalityId: string, @Param('legalId') legalId: string): Promise<string | null> {
     let url: string;
     if (legalId.length == 10) {
-      url = `party/1.0/ENTERPRISE/${legalId}/partyId`;
+      url = `party/2.0/${municipalityId}/ENTERPRISE/${legalId}/partyId`;
     } else if (legalId.length == 12) {
-      url = `party/1.0/PRIVATE/${legalId}/partyId`;
+      url = `party/2.0/${municipalityId}/PRIVATE/${legalId}/partyId`;
     } else {
       logger.error('Incoming legalId is not valid: ', legalId);
       return null;

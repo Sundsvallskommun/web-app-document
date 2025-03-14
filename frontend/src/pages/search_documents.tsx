@@ -81,7 +81,7 @@ export const SearchDocumentPage: React.FC = () => {
     }
 
     setIsLoading(true);
-    translateLegalId(legalId.replace('-', ''))
+    translateLegalId(selectedMunicipality.municipalityId, legalId.replace('-', ''))
       .then((partyId: string) => {
         if (!partyId) {
           throw new Error('No matching partyId');
@@ -94,7 +94,7 @@ export const SearchDocumentPage: React.FC = () => {
   };
   
   const switchPage = (page: number) => {
-    translateLegalId(legalId.replace('-', ''))
+    translateLegalId(selectedMunicipality.municipalityId, legalId.replace('-', ''))
       .then((partyId: string) => {
         if (!partyId) {
           throw new Error('No matching partyId');
