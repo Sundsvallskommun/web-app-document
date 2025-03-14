@@ -11,8 +11,11 @@ export interface DocumentSearchResult {
   totalRecords: number;
 } 
 
-export const translateLegalId: ( legalId: string ) => Promise<string> = async (legalId) => {
-  const url = `party/${legalId}/partyId`;
+export const translateLegalId: ( 
+  municipalityId: string,
+  legalId: string 
+) => Promise<string> = async (municipalityId, legalId) => {
+  const url = `party/${municipalityId}/${legalId}/partyId`;
 
   return apiService
     .get<ApiPartyData>(url)
