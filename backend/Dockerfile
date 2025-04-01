@@ -1,43 +1,37 @@
-# Install dependencies only when needed
-FROM node:18-slim AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-#RUN apk add --no-cache libc6-compat
-RUN apt-get update
-RUN apt-get install -y openssl
+ARG NODE_VERSION=20.9.0-alpine
+
+FROM node:${NODE_VERSION}
+
+# Install dependencies for next.js
+RUN apk add --no-cache libc6-compat
+
+# Working folder
 WORKDIR /app
+
+# Copy package.json and lock file first to leverage caching
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
 
-# If using npm with a `package-lock.json` comment out above and use below instead
-# COPY package.json package-lock.json ./
-# RUN npm ci
+# Install all dependencies
+RUN yarn install --frozen-lockfile --ignore-scripts --prefer-offline
 
-# Rebuild the source code only when needed
-FROM node:18-slim AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy the rest of the code and build
+COPY . ./
 
+# Generate Prisma client before build
+RUN yarn prisma generate
+    
+# Build the Next.js app
 RUN yarn build
 
-# Production image, copy all the files and run next
-FROM node:18-slim AS runner
-RUN apt-get update
-RUN apt-get install -y openssl
-WORKDIR /app
-
-ENV NODE_ENV production
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
-
-COPY --from=builder --chown=nodejs:nodejs /app/ ./
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nodejs
+# Create log folder and give permissions to node user
+RUN mkdir -p /app/data/logs && chown -R nodejs:nodejs /app/data
 
 USER nodejs
 
-EXPOSE 3000
-ENV PORT 3000
+# Expose Next.js-port
+EXPOSE 3001
 
-RUN yarn run prisma:generate
-RUN yarn run prisma:migrate
-CMD ["node", "./dist/server.js"]
+# Start the app
+CMD ["yarn", "start"]
