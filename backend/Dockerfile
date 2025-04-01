@@ -1,4 +1,6 @@
-FROM node:20.9.0-alpine
+ARG NODE_VERSION=20.9.0-alpine
+
+FROM node:${NODE_VERSION}
 
 # Install dependencies for next.js
 RUN apk add --no-cache libc6-compat
@@ -17,20 +19,19 @@ COPY . ./
 
 # Generate Prisma client before build
 RUN yarn prisma generate
-
+    
 # Build the Next.js app
 RUN yarn build
 
-# Create a non-root user
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nodejs
-
 # Create log folder and give permissions to node user
 RUN mkdir -p /app/data/logs && chown -R nodejs:nodejs /app/data
 
 USER nodejs
 
 # Expose Next.js-port
-EXPOSE 3000
+EXPOSE 3001
 
 # Start the app
-CMD ["node", "server.js"]
+CMD ["yarn", "start"]

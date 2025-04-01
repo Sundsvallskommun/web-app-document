@@ -1,4 +1,6 @@
-FROM node:20.9.0-alpine AS deps
+ARG NODE_VERSION=20.9.0-alpine
+
+FROM node:${NODE_VERSION} AS deps
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 # Install dependencies for Next.js
@@ -13,7 +15,7 @@ COPY package.json yarn.lock next.config.js ./
 # Install all dependencies (including devDependencies)
 RUN yarn install --frozen-lockfile --ignore-scripts --prefer-offline
 
-FROM node:20.9.0-alpine AS builder
+FROM node:${NODE_VERSION} AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
@@ -25,7 +27,7 @@ ENV NEXT_TELEMTRY_DISABLED=1
 # Build the Next.js app
 RUN yarn build
 
-FROM node:20.9.0-alpine AS runner
+FROM node:${NODE_VERSION} AS runner
 
 WORKDIR /app
 
