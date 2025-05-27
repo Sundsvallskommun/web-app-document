@@ -1,8 +1,8 @@
 import { HttpException } from '@/exceptions/HttpException';
-import { apiURL } from '@/utils/util';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ApiTokenService from './api-token.service';
 import { logger } from '@/utils/logger';
+import { DISABLE_OAUTH2 } from '@config';
 
 class ApiResponse<T> {
   data: T;
@@ -12,19 +12,23 @@ class ApiResponse<T> {
 class ApiService {
   private apiTokenService = new ApiTokenService();
   private async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    let defaultHeaders = {};
+    
+    if (!DISABLE_OAUTH2) { // Only fetch oauth2 authenication if property is enabled
     const token = await this.apiTokenService.getToken();
+      defaultHeaders = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+	}
 
-    const defaultHeaders = {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
     const defaultParams = {};
 
     const preparedConfig: AxiosRequestConfig = {
       ...config,
       headers: { ...defaultHeaders, ...config.headers },
       params: { ...defaultParams, ...config.params },
-      url: apiURL(config.url),
+      url: config.url,
     };
     logger.info(preparedConfig.method + ' ' + preparedConfig.url);
     try {

@@ -2,6 +2,7 @@ import ApiService from '@/services/api.service';
 import { logger } from '@/utils/logger';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { Controller, Get, Res, Param, QueryParam } from 'routing-controllers';
+import { DISABLE_OAUTH2, API_BASE_URL, DOCUMENT_API_BASE_URL } from '@config';
 
 interface ApiDocumentSearchResult {
   documents: ApiDocument[];
@@ -59,10 +60,10 @@ export class DocumentController {
     @QueryParam('size') size: number,
     @QueryParam('sort') sort: string,
   ): Promise<ApiDocumentSearchResult> {
-    const url =
-      this.baseUrl +
-      municipalityId +
-      `/documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}` +
+    let url:string = DISABLE_OAUTH2 ? DOCUMENT_API_BASE_URL + '/' : API_BASE_URL + '/' + this.baseUrl; // If oauth2 is disabled, use local document-api-url, else use normal prefix
+
+    url = url + 
+      `${municipalityId}/documents?query=${query}&includeConfidential=${includeConfidential || false}&page=${page || 0}&size=${size || 10}` +
       `&sort=${sort}` +
       `&onlyLatestRevision=true`;
 
@@ -82,8 +83,9 @@ export class DocumentController {
     @QueryParam('includeConfidential') includeConfidential: boolean,
     @Res() response: any,
   ): Promise<string> {
-    const url =
-      this.baseUrl + municipalityId + `/documents/${registrationNumber}/files/${documentDataId}?includeConfidential=${includeConfidential || false}`;
+    let url:string = DISABLE_OAUTH2 ? DOCUMENT_API_BASE_URL + '/' : API_BASE_URL + '/' + this.baseUrl; // If oauth2 is disabled, use the defined document-api-url, else use normal prefix
+
+    url = url + municipalityId + `/documents/${registrationNumber}/files/${documentDataId}?includeConfidential=${includeConfidential || false}`;
 
     const res = await this.apiService.get<ArrayBuffer>({ url, responseType: 'arraybuffer' }).catch(e => {
       logger.error('Error when retrieving document file:', e);

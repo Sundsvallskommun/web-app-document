@@ -33,11 +33,11 @@ dayjs.updateLocale('sv', {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <GuiProvider colorScheme="light">
+    <GuiProvider>
       <AppWrapper>
-        <LoginGuard>
+    {/* <LoginGuard> */}
           <Component {...pageProps} />
-        </LoginGuard>
+    {/* </LoginGuard> */}
       </AppWrapper>
     </GuiProvider>
   );

@@ -4,12 +4,15 @@ config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
 export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 export const SWAGGER_ENABLED = process.env.SWAGGER_ENABLED === 'true';
 export const SESSION_MEMORY = process.env.SESSION_MEMORY === 'true';
+export const DISABLE_OAUTH2 = process.env.DISABLE_OAUTH2 === 'true';
 
 export const {
   APP_NAME,
   NODE_ENV,
   PORT,
   API_BASE_URL,
+  DOCUMENT_API_BASE_URL,
+  PARTY_API_BASE_URL,
   LOG_FORMAT,
   LOG_DIR,
   ORIGIN,
