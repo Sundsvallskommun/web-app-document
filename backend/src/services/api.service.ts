@@ -20,7 +20,7 @@ class ApiService {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       };
-	}
+    }
 
     const defaultParams = {};
 

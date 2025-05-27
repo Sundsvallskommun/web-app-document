@@ -179,7 +179,7 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           <table>
             <tbody>
             {document.metadataList.map((metaData, idx) => (
-		      <tr key={metaData.key + idx}>
+              <tr key={metaData.key + idx}>
                 <td className="metadata">
                   {metaData.key}
                 </td>
