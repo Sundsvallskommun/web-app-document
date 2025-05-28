@@ -7,21 +7,17 @@ body,
   max-width: 100vw;
   min-height: 100vh;
 }
-
 body {
   overflow-x: hidden;
 }
-
 #__next,
 .full-page-layout {
   display: flex;
   flex-direction: column;
 }
-
 .main-container {
   flex: 1 0 auto;
 }
-
 .customMenu {
   position: absolute;
   top: -70px;
@@ -29,55 +25,68 @@ body {
   display: flex;
   flex-direction: row;
 }
-
 .language-bar {
   position: relative;
   bottom: 6px;
   left: 10px;
 }
-
 .sk-form-combobox {
   position: relative;
   top: -4px;
   margin-right: 10px;
 }
-
 button.input-and-button {
     border-top-left-radius: unset;
-	border-bottom-left-radius: unset;
-	position: relative;
-	bottom: 1px;
-	margin-left: 5px;
+  border-bottom-left-radius: unset;
+  position: relative;
+  bottom: 1px;
+  margin-left: 5px;
 }
-
 input.sk-form-input.sk-form-input-md.input-and-button {
     border-top-right-radius: unset;
-	border-bottom-right-radius: unset;
+  border-bottom-right-radius: unset;
 }
-
 .sk-pagination {
-	padding-top: 0.5em
+  padding-top: 0.5em
 }
-
  .border-t {
-	border-top-color: black;
+  border-top-color: black;
     border-top-width: 0.1rem;
 }
  .border-b {
-	border-bottom-color: black;
+  border-bottom-color: black;
     border-bottom-width: 0.1rem;
 }
 td.metadata {
-	padding-top: 5px;
-	vertical-align: top;
+  padding-top: 5px;
+  vertical-align: top;
 }
 div.metadata {
-	padding-left: 1em;
+  padding-left: 1em;
 }
 div.metadata p:not(:last-child) {
-	padding-bottom: 4px;
+  padding-bottom: 4px;
 }
 footer.sk-footer {
-	padding-top: 0em;
-	padding-left: 1.4em;
+  padding-top: 0em;
+  padding-left: 1.4em;
+}
+.sk-table-caption {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: "Raleway", sans-serif;
+  display: inline-flex;
+}
+span.confidential-img {
+  position: relative;
+  top: 0.35rem;
+  right: 0.5rem;
+}
+div.middle {
+  display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  display: -ms-flexbox;  /* TWEENER - IE 10 */
+  display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+  display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
+  justify-content: center;
+  align-items: center;
 }

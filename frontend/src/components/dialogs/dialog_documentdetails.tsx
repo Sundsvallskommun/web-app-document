@@ -2,9 +2,9 @@ import { Button, Dialog, Link, Divider, useSnackbar } from '@sk-web-gui/react';
 import { ApiDocument, ApiDocumentData } from '@interfaces/document';
 import dayjs from 'dayjs';
 import {useState} from "react";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'next-i18next';
 import { fetchDocumentFile } from '@services/document-service/search-document-service'
+import { LucideIcon } from '@sk-web-gui/lucide-icon';
 
 interface DialogDocumentDetailsProps {
   open: boolean;
@@ -158,8 +158,8 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
                 >
                   <span className="relative leading-[2.8rem]">
                     {t('dialog_documentdetails:sections.files.rows.download_document')}
-                    <OpenInNewIcon className="!w-[1.4rem] !h-[1.4rem] absolute -right-7 top-2" />
                   </span>
+                  &nbsp;<LucideIcon name={'external-link'} size= '1.5rem'/>
                 </Link>
               </td>
             </tr>
@@ -167,10 +167,11 @@ export const DialogDocumentDetails: React.FC<DialogDocumentDetailsProps> = ({ op
           </tbody>
         </table>
         <Divider.Section>
-          {t('dialog_documentdetails:sections.metadata.header.metadata')}&nbsp;
           <Link href="#" onClick={() => setMetadataVisible(!metadataVisible)}>
-            ({metadataVisible ? (<span>{t('dialog_documentdetails:sections.metadata.header.hide')}</span>) : 
-            (<span>{t('dialog_documentdetails:sections.metadata.header.show')}</span>)})
+            <span>
+              {t('dialog_documentdetails:sections.metadata.header.metadata')}&nbsp;
+              {metadataVisible ? <span>{t('dialog_documentdetails:sections.metadata.header.hide')}</span> : <span>{t('dialog_documentdetails:sections.metadata.header.show')}</span>}
+            </span>
           </Link>
         </Divider.Section>
         {metadataVisible && 

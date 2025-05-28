@@ -5,9 +5,9 @@ const validateEnv = () => {
   cleanEnv(process.env, {
     NODE_ENV: str(),
     SECRET_KEY: str(),
-    API_BASE_URL: str(),
-    CLIENT_KEY: str(),
-    CLIENT_SECRET: str(),
+//    API_BASE_URL: str(), // Removed validation for the three variables below to enable local backend endpoints
+//    CLIENT_KEY: str(),
+//    CLIENT_SECRET: str(),
     PORT: port(),
     BASE_URL_PREFIX: str(),
     SAML_CALLBACK_URL: url(),

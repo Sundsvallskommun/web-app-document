@@ -1,9 +1,8 @@
 import qs from 'qs';
 import axios from 'axios';
-import { CLIENT_KEY, CLIENT_SECRET } from '@config';
+import { API_BASE_URL, CLIENT_KEY, CLIENT_SECRET } from '@config';
 import { HttpException } from '@/exceptions/HttpException';
 import { logger } from '@utils/logger';
-import { API_BASE_URL } from '@config';
 
 export interface Token {
   access_token: string;

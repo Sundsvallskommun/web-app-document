@@ -1,22 +1,3 @@
-import 'reflect-metadata';
-import { existsSync, mkdirSync } from 'fs';
-import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import createMemoryStore from 'memorystore';
-import createFileStore from 'session-file-store';
-import express from 'express';
-import helmet from 'helmet';
-import hpp from 'hpp';
-import morgan from 'morgan';
-import passport from 'passport';
-import { Strategy, VerifiedCallback } from '@node-saml/passport-saml';
-import bodyParser from 'body-parser';
-import { useExpressServer, getMetadataArgsStorage } from 'routing-controllers';
-import { routingControllersToSpec } from 'routing-controllers-openapi';
-import swaggerUi from 'swagger-ui-express';
 import {
   APP_NAME,
   BASE_URL_PREFIX,
@@ -35,15 +16,39 @@ import {
   SAML_PUBLIC_KEY,
   SECRET_KEY,
   SESSION_MEMORY,
-  SWAGGER_ENABLED,
+  SWAGGER_ENABLED, 
 } from '@config';
 import errorMiddleware from '@middlewares/error.middleware';
+import { Strategy, VerifiedCallback } from '@node-saml/passport-saml';
 import { logger, stream } from '@utils/logger';
-import { Profile } from './interfaces/profile.interface';
-import { HttpException } from './exceptions/HttpException';
+import bodyParser from 'body-parser';
+import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import session from 'express-session';
+import { existsSync, mkdirSync } from 'fs';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import createMemoryStore from 'memorystore';
+import morgan from 'morgan';
+import passport from 'passport';
 import { join } from 'path';
-import { isValidUrl } from './utils/util';
+import 'reflect-metadata';
+import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
+import createFileStore from 'session-file-store';
+import swaggerUi from 'swagger-ui-express';
+import { HttpException } from './exceptions/HttpException';
+import { Profile } from './interfaces/profile.interface';
+import { User } from './interfaces/users.interface';
 import { additionalConverters } from './utils/custom-validation-classes';
+import { isValidUrl } from './utils/util';
+
+const corsWhitelist = ORIGIN.split(',');
 
 const SessionStoreCreate = SESSION_MEMORY ? createMemoryStore(session) : createFileStore(session);
 const sessionTTL = 4 * 24 * 60 * 60;
@@ -72,10 +77,10 @@ const samlStrategy = new Strategy(
     idpCert: SAML_IDP_PUBLIC_CERT,
     issuer: SAML_ISSUER,
     wantAssertionsSigned: false,
-    acceptedClockSkewMs: 1000,
-    logoutCallbackUrl: SAML_LOGOUT_CALLBACK_URL,
     wantAuthnResponseSigned: false,
+    acceptedClockSkewMs: 1000,
     audience: false,
+    logoutCallbackUrl: SAML_LOGOUT_CALLBACK_URL,
   },
   async function (profile: Profile, done: VerifiedCallback) {
     if (!profile) {
@@ -84,42 +89,49 @@ const samlStrategy = new Strategy(
         message: 'Missing SAML profile',
       });
     }
-    // Depending on using Onegate or ADFS for federation the profile data looks a bit different
-    // Here we use the null coalescing operator (??) to handle both cases.
-    // (A switch from Onegate to ADFS was done on august 6 2023 due to problems in MobilityGuard.)
-    //
+    const { givenName, surname, citizenIdentifier, username } = profile;
 
-    const givenName = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ?? profile['givenName'];
-    const sn = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] ?? profile['sn'];
-    const email = profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ?? profile['email'];
-    const groups = profile['http://schemas.xmlsoap.org/claims/Group']?.join(',') ?? profile['groups'];
-    const username = profile['urn:oid:0.9.2342.19200300.100.1.1'];
-
-    if (!givenName || !sn || !email || !groups || !username) {
-      return done(null, null, {
+    if (!givenName || !surname || !citizenIdentifier) {
+      return done({
         name: 'SAML_MISSING_ATTRIBUTES',
         message: 'Missing profile attributes',
       });
     }
 
-    try {
-      const findUser = {
-        name: `${givenName} ${sn}`,
-        givenName: givenName,
-        surname: sn,
-        username: username,
-        email: email,
-        groups: groups.split(','),
-      };
+    //   const groupList: ADRole[] =
+    //   groups !== undefined
+    //     ? (groups
+    //         .split(',')
+    //         .map(x => x.toLowerCase())
+    //         .filter(x => x.includes('sg_appl_app_')) as ADRole[])
+    //     : [];
 
-      logger.info('Found user:', findUser);
+    // const appGroups: ADRole[] = groupList.length > 0 ? groupList : groupList.concat('sg_appl_app_read');
+
+    try {
+      // const personNumber = profile.citizenIdentifier;
+      // const citizenResult = await apiService.get<any>({ url: `citizen/2.0/${personNumber}/guid` });
+      // const { data: personId } = citizenResult;
+
+      // if (!personId) {
+      //   return done({
+      //     name: 'SAML_CITIZEN_FAILED',
+      //     message: 'Failed to fetch user from Citizen API',
+      //   });
+      // }
+
+      const findUser: User = {
+        // personId: personId,
+        username: typeof username === 'string' ? username : undefined,
+        name: `${givenName} ${surname}`,
+        givenName: givenName,
+        surname: typeof surname === 'string' ? surname : undefined,
+      };
 
       done(null, findUser);
     } catch (err) {
       if (err instanceof HttpException && err?.status === 404) {
-        // TODO: Handle missing person form Citizen?
-        logger.error('Error when calling Citizen:');
-        logger.error(err);
+        // Handle missing person form Citizen
       }
       done(err);
     }
@@ -186,6 +198,23 @@ class App {
     this.app.use(passport.session());
     passport.use('saml', samlStrategy);
 
+    this.app.use(
+      cors({
+        credentials: CREDENTIALS,
+        origin: function (origin, callback) {
+          if (origin === undefined || corsWhitelist.indexOf(origin) !== -1 || corsWhitelist.indexOf('*') !== -1) {
+            callback(null, true);
+          } else {
+            if (NODE_ENV == 'development') {
+              callback(null, true);
+            } else {
+              callback(new Error('Not allowed by CORS'));
+            }
+          }
+        },
+      }),
+    );
+
     this.app.get(
       `${BASE_URL_PREFIX}/saml/login`,
       (req, res, next) => {
@@ -193,6 +222,9 @@ class App {
           req.query.RelayState = req.session.returnTo;
         } else if (req.query.successRedirect) {
           req.query.RelayState = req.query.successRedirect;
+        }
+        if (req.query.failureRedirect) {
+          req.query.RelayState = `${req.query.RelayState},${req.query.failureRedirect}`;
         }
         next();
       },
@@ -238,40 +270,80 @@ class App {
           return next(err);
         }
 
-        let successRedirect, failureRedirect;
-        if (isValidUrl(req.body.RelayState)) {
-          successRedirect = req.body.RelayState;
+        let successRedirect: URL, failureRedirect: URL;
+        const urls = req?.body?.RelayState.split(',');
+
+        if (isValidUrl(urls[0])) {
+          successRedirect = new URL(urls[0]);
+        }
+        if (isValidUrl(urls[1])) {
+          failureRedirect = new URL(urls[1]);
+        } else {
+          failureRedirect = successRedirect;
         }
 
+        const queries = new URLSearchParams(failureRedirect.searchParams);
+
         if (req.session.messages?.length > 0) {
-          failureRedirect = successRedirect + `?failMessage=${req.session.messages[0]}`;
+          queries.append('failMessage', req.session.messages[0]);
         } else {
-          failureRedirect = successRedirect + `?failMessage='SAML_UNKNOWN_ERROR'`;
+          queries.append('failMessage', 'SAML_UNKNOWN_ERROR');
         }
+
         if (failureRedirect) {
-          res.redirect(failureRedirect);
+          res.redirect(failureRedirect.toString());
         } else {
-          res.redirect(successRedirect);
+          res.redirect(successRedirect.toString());
         }
       });
     });
 
-    this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
-      let successRedirect, failureRedirect;
-      if (isValidUrl(req.body.RelayState)) {
-        successRedirect = req.body.RelayState;
-      }
+    const samlLoginRateLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // Limit each IP to 100 requests per windowMs
+      message: 'Too many login attempts from this IP, please try again later.',
+    });
 
-      if (req.session.messages?.length > 0) {
-        failureRedirect = successRedirect + `?failMessage=${req.session.messages[0]}`;
+    this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, samlLoginRateLimiter, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
+      let successRedirect: URL, failureRedirect: URL;
+
+      let urls = req?.body?.RelayState.split(',');
+
+      if (isValidUrl(urls[0])) {
+        successRedirect = new URL(urls[0]);
+      }
+      if (isValidUrl(urls[1])) {
+        failureRedirect = new URL(urls[1]);
       } else {
-        failureRedirect = successRedirect + `?failMessage='SAML_UNKNOWN_ERROR'`;
+        failureRedirect = successRedirect;
       }
 
-      passport.authenticate('saml', {
-        successReturnToOrRedirect: successRedirect,
-        failureRedirect: failureRedirect,
-        failureMessage: true,
+      passport.authenticate('saml', (err, user) => {
+        if (err) {
+          const queries = new URLSearchParams(failureRedirect.searchParams);
+          if (err?.name) {
+            queries.append('failMessage', err.name);
+          } else {
+            queries.append('failMessage', 'SAML_UNKNOWN_ERROR');
+          }
+          failureRedirect.search = queries.toString();
+          res.redirect(failureRedirect.toString());
+        } else if (!user) {
+          const failMessage = new URLSearchParams(failureRedirect.searchParams);
+          failMessage.append('failMessage', 'NO_USER');
+          failureRedirect.search = failMessage.toString();
+          res.redirect(failureRedirect.toString());
+        } else {
+          req.login(user, loginErr => {
+            if (loginErr) {
+              const failMessage = new URLSearchParams(failureRedirect.searchParams);
+              failMessage.append('failMessage', 'SAML_UNKNOWN_ERROR');
+              failureRedirect.search = failMessage.toString();
+              res.redirect(failureRedirect.toString());
+            }
+            return res.redirect(successRedirect.toString());
+          });
+        }
       })(req, res, next);
     });
   }
@@ -279,11 +351,6 @@ class App {
   private initializeRoutes(controllers: Function[]) {
     useExpressServer(this.app, {
       routePrefix: BASE_URL_PREFIX,
-      cors: {
-        origin: ORIGIN,
-        credentials: CREDENTIALS,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      },
       controllers: controllers,
       defaultErrorHandler: false,
     });
@@ -319,7 +386,9 @@ class App {
       },
     });
 
-    this.app.use(`${BASE_URL_PREFIX}/swagger.json`, (req, res) => res.json(spec));
+    this.app.use(`${BASE_URL_PREFIX}/swagger.json`, (req: express.Request, res: express.Response) => {
+      res.json(spec);
+    });
     this.app.use(`${BASE_URL_PREFIX}/api-docs`, swaggerUi.serve, swaggerUi.setup(spec));
   }
 
