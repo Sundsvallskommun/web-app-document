@@ -5,23 +5,22 @@ import { useTranslation } from 'next-i18next';
 import { shallow } from 'zustand/shallow';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { capitalize } from 'underscore.string';
-import { Fragment, useState, useEffect, useCallback } from 'react';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { Link, Button, Checkbox, Combobox, Select, useSnackbar, Pagination, Input, Spinner, Image, ZebraTable, ZebraTableColumn, ZebraTableHeader } from '@sk-web-gui/react';
+import { useState, useEffect, useCallback } from 'react';
+import { Link, Button, Checkbox, Combobox, Select, useSnackbar, Pagination, Input, Spinner, Image } from '@sk-web-gui/react';
 import { Document, translateLegalId, searchDocuments } from '@services/document-service/search-document-service'
 import { getMunicipalities, Municipality } from '@services/municipality-service/municipality-service';
 import dayjs from 'dayjs';
 import { DialogDocumentDetails } from '@components/dialogs/dialog_documentdetails';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { LucideIcon } from '@sk-web-gui/lucide-icon';
+import { AutoTable } from '@sk-web-gui/table';
 
 export const SearchDocumentPage: React.FC = () => {
-  const sizes = [5,10,15,20]
   const router = useRouter();
   const { pathname, asPath, query } = router;  
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality>(null);
-  const [pageSize, setPageSize] = useState<number>(10);
   const user = useUserStore((s) => s.user, shallow);
   const { t } = useTranslation();
   const [isInvalidInput, setIsInvalidInput] = useState<boolean>(false);
@@ -31,7 +30,6 @@ export const SearchDocumentPage: React.FC = () => {
   const [legalId, setLegalId] = useState<string>(null);
   const [isIncludeConfidential, setIsIncludeConfidential] = useState<boolean>(false);
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [sortObject, setSortObject] = useState<{ [key: string]: string }>({'registrationNumber': 'desc'});
   const [selectedDocument, setSelectedDocument] = useState<Document>(null);
   const [paginationData, setPaginationData] = useState<{
     page: number;
@@ -51,8 +49,8 @@ export const SearchDocumentPage: React.FC = () => {
     router.push({ pathname, query }, asPath, { locale: langValue });
   };
 
-  const openDetails = (index: number) => {
-    setSelectedDocument(documents[index]);
+  const openDetails = (item: Document) => {
+    setSelectedDocument(item);
     setIsDetailOpen(true);
   };
 
@@ -93,21 +91,8 @@ export const SearchDocumentPage: React.FC = () => {
       });
   };
   
-  const switchPage = (page: number) => {
-    translateLegalId(selectedMunicipality.municipalityId, legalId.replace('-', ''))
-      .then((partyId: string) => {
-        if (!partyId) {
-          throw new Error('No matching partyId');
-        }
-        loadDocuments(partyId, page);
-      })
-      .catch((e) => {
-        handleError('Error when loading matching documents:', e, t('search_documents:errors.legalIdNotTranslatable'));
-      });
-  };
-  
   const loadDocuments = (partyId: string, page: number) => {
-    searchDocuments(selectedMunicipality.municipalityId, partyId, isIncludeConfidential, page, pageSize, sortObject)
+    searchDocuments(selectedMunicipality.municipalityId, partyId, isIncludeConfidential, page, 1000, {'registrationNumber': 'desc'})
       .then((res) => {
         setDocuments(res.documents);
         setPaginationData({
@@ -150,29 +135,6 @@ export const SearchDocumentPage: React.FC = () => {
   };
  
   useEffect(() => {
-    if (legalId) {
-      setDocuments([]);
-      setPaginationData(null);
-	  search();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize]);
-  
-  const sortHandler = useCallback((sortColumn: number, sortAscending: boolean) => {
-    const sortColumns:string[] = ['registrationNumber', 'description', 'confidentiality.confidential', 'created', 'createdBy'];
-    const columName = sortColumns[sortColumn];
-    const new_sort = {[columName]: sortAscending ? 'asc' : 'desc'}; 
-    setSortObject(new_sort);
-  }, []); 
-
-  useEffect(() => {
-    if (legalId) {
-      switchPage(paginationData?.page);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortObject]);
-  
-  useEffect(() => {
     setSelectedMunicipality(municipalities.find(m => m.municipalityId === '2281')); // Hardcoded to Sundsvalls kommun, in the future we might able to determine it from userinformation in AD
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [municipalities]);
@@ -188,87 +150,53 @@ export const SearchDocumentPage: React.FC = () => {
   const labels = [
     {
       label: t(`search_documents:searchtable_headers.diarynumber`),
-      sortable: true,
-      screenReaderOnly: false
+      isColumnSortable: true,
+      property: 'registrationNumber',
+      renderColumn: (value: string, item: Document) => {
+        return (
+          <span data-cy="table-column-registrationnbr">
+            <span><Link href="#" onClick={() => openDetails(item)}>{item.registrationNumber}</Link></span>
+          </span>
+        );
+      },    
     },
     {
       label: t(`search_documents:searchtable_headers.description`),
-      sortable: true,
-      screenReaderOnly: false
+      isColumnSortable: true,
+      property: 'description',
     },
     {
       label: t(`search_documents:searchtable_headers.confidentiality`),
-      sortable: true,
-      screenReaderOnly: false
+      isColumnSortable: false,
+      renderColumn: (value: string, item: Document) => {
+        return (
+          <span data-cy="table-column-confidentiality">
+            <span className='confidential-img'>
+              <LucideIcon color={item.confidentiality.confidential ? 'warning' : 'primary'} name={item.confidentiality.confidential ? 'lock' : 'unlock'} size= '2rem'/> 
+            </span>
+            {item.confidentiality.confidential ? t(`search_documents:confidential`) : t(`search_documents:public`)}
+          </span>
+        );
+      },    
     },
     {
       label: t(`search_documents:searchtable_headers.created`),
-      sortable: true,
-      screenReaderOnly: false
+      isColumnSortable: true,
+      property: 'created',
+      renderColumn: (value: string) => {
+        return (
+          <span data-cy="table-column-created">
+            <span>{dayjs(value).format('YYYY-MM-DD HH:mm')}</span>
+          </span>
+        );
+      },    
     },
     {
       label: t(`search_documents:searchtable_headers.created_by`),
-      sortable: true,
-      screenReaderOnly: false
+      isColumnSortable: true,
+      property: 'createdBy',
     }
   ];
-  
-  const headers: ZebraTableHeader[] = labels.map((l, idx) => ({
-    element: (
-      <span className="font-bold" key={`mh${idx}`}>{l.label}</span>
-    ),
-    isShown: true,
-    isColumnSortable: l.sortable,
-    screenReaderOnly: l.screenReaderOnly,
-  }));
-
-  const rows: ZebraTableColumn[][] = documents.map((r: Document, idx) => {
-    return [
-      {
-        element: (
-          <Fragment key={`mr${r.id}`}>
-            <span><Link href="#" onClick={() => openDetails(idx)}>{r.registrationNumber}</Link></span>
-          </Fragment>
-        ),
-        isShown: true
-      },
-      {
-        element: (
-          <Fragment key={`mr${r.id}`}>
-            <span>{r.description}</span>
-          </Fragment>
-        ),
-        isShown: true
-      },
-      {
-        element: (
-          <Fragment key={`mr${r.id}`}>
-            <span>
-              {r.confidentiality.confidential ? t(`search_documents:confidential`) : t(`search_documents:public`)}
-            </span>
-          </Fragment>
-        ),
-        isShown: true
-      },
-      {
-        element: (
-          <Fragment key={`mr${r.id}`}>
-            <span>{dayjs(r.created).format('YYYY-MM-DD HH:mm')}</span>
-          </Fragment>
-        ),
-        isShown: true
-      },
-      {
-        element: (
-          <Fragment key={`mr${r.id}`}>
-            <span>{r.createdBy}</span>
-          </Fragment>
-        ),
-        isShown: true
-      }
-    ];
-  });
-
   return (
     <DefaultLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - ${t('search_documents:title')}`}>
 
@@ -359,7 +287,7 @@ export const SearchDocumentPage: React.FC = () => {
               onClick={() => search()}
               disabled={isLoading || legalId === null || legalId.length === 0}
               leftIcon={
-                isLoading ? <Spinner /> : <SearchOutlinedIcon />
+                isLoading ? <Spinner /> : <LucideIcon name={'file-search'}  />
               }>
               {isLoading ? t('search_documents:ongoing_search') : t('search_documents:search')}
             </Button>
@@ -370,55 +298,20 @@ export const SearchDocumentPage: React.FC = () => {
               </div>
             }
           </p>
-          
-          <p>
-            <Select 
-              size={'sm'}
-              value={pageSize}
-              onSelectValue={(e) => setPageSize(e)}
-            >
-              {sizes.map(size => <Select.Option key={size} value={size}>
-                {size}
-              </Select.Option>)}
-            </Select> {t('search_documents:documents_per_page')}
-          </p>
         </div>
 
         <div style={{ marginTop: '2em' }}>
-          {documents.length > 0 &&
+        {isLoading ? <div className='middle'><Spinner color='info' /></div> :  documents.length > 0 &&
             <div>
-              <h4>
-                {paginationData.totalElements} {t('search_documents:matching_documents')} {formatLegalId(legalId)} ({t('search_documents:displaying_page')} {paginationData.page + 1} {t('search_documents:of')} {paginationData.totalPages})
-              </h4>
-
-              <div className={`w-full px-lg mt-sm border-b border-gray-stroke`}></div>
-
-              <ZebraTable
-                aria-label="t('search_documents:document_table_title')"
-                data-cy="main-table"
-                activePage={paginationData?.page + 1 || 1}
-                pageSize={pageSize}
-                headers={headers}
-                rows={rows}
+              <AutoTable
+                data-cy="documents-table"
+                className="w-full"
+                captionTitle={`${paginationData.totalElements} ${t('search_documents:matching_documents')} ${formatLegalId(legalId)}`}
+                captionShowPages={true}
                 tableSortable={true}
-                sortHandler={sortHandler}
-                defaultSort={{ idx: 0, sortMode: false }}
+                autoheaders={labels}
+                autodata={documents}
               />
-
-              {paginationData?.totalPages > 1 && (
-                <div>
-                  <div className="w-full px-lg mt-sm border-t border-gray-stroke"></div>
-                  <Pagination
-                    pages={paginationData?.totalPages}
-                    activePage={paginationData?.page + 1}
-                    changePage={(p) => {
-                      switchPage(p - 1);
-                    }}
-                  />
-                  <div className="w-full px-lg mt-sm border-b border-gray-stroke"></div>
-                </div>
-              )}
-
             </div>}
         </div>
       </Main>
