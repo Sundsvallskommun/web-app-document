@@ -35,9 +35,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GuiProvider>
       <AppWrapper>
-    {/* <LoginGuard> */}
+        <LoginGuard>
           <Component {...pageProps} />
-    {/* </LoginGuard> */}
+        </LoginGuard>
       </AppWrapper>
     </GuiProvider>
   );

@@ -13,11 +13,8 @@ export default function Start() {
   const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
 
-  const params = new URLSearchParams(window.location.search);
-  const isLoggedOut = params.get('loggedout') === '';
-  const failMessage = params.get('failMessage');
   // Turn on/off automatic login
-  const autoLogin = true;
+  const useAutoLogin = process.env.NEXT_PUBLIC_USE_AUTOLOGIN === 'true';
 
   const initalFocus = useRef(null);
   const setInitalFocus = () => {
@@ -28,7 +25,10 @@ export default function Start() {
 
   const onLogin = () => {
     // NOTE: send user to login with SSO
-    const path = new URLSearchParams(window.location.search).get('path') || router.query.path || '';
+    let path = new URLSearchParams(window.location.search).get('path') || router.query.path || '';
+    if (path.indexOf(process.env.NEXT_PUBLIC_BASEPATH) === 0) {
+      path = path.slice(process.env.NEXT_PUBLIC_BASEPATH.length);
+    }
     router.push({
       pathname: `${process.env.NEXT_PUBLIC_API_URL}/saml/login`,
       query: {
@@ -40,6 +40,11 @@ export default function Start() {
   useEffect(() => {
     setInitalFocus();
     if (!router.isReady) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isLoggedOut = params.get('loggedout') === '';
+    const failMessage = params.get('failMessage');
+
     setTimeout(() => setMounted(true), 500); // to not flash the login-screen on autologin
     if (isLoggedOut) {
       router.push(
@@ -50,7 +55,7 @@ export default function Start() {
         { shallow: true }
       );
     } else {
-      if (!failMessage && autoLogin) {
+      if (!failMessage && useAutoLogin) {
         // autologin
         onLogin();
       } else if (failMessage) {
@@ -60,13 +65,12 @@ export default function Start() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
-  if (!mounted && !failMessage) {
+  if (!mounted) {
     // to not flash the login-screen on autologin
     return <LoaderFullScreen />;
   }
 
   return (
-	
     <EmptyLayout title={`${process.env.NEXT_PUBLIC_APP_NAME} - ${t('common:login')}`}>
       <main>
         <div className="flex items-center justify-center min-h-screen">

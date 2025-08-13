@@ -84,14 +84,13 @@ const samlStrategy = new Strategy(
   },
   async function (profile: Profile, done: VerifiedCallback) {
     if (!profile) {
-      return done({
-        name: 'SAML_MISSING_PROFILE',
-        message: 'Missing SAML profile',
-      });
+      console.error('SAML_MISSING_PROFILE');
+      return done({ name: 'SAML_MISSING_PROFILE', message: 'Missing SAML profile' });
     }
-    const { givenName, surname, citizenIdentifier, username } = profile;
 
-    if (!givenName || !surname || !citizenIdentifier) {
+    const { username, givenName, surname, userId } = profile;
+    if (!givenName || !surname || !userId) {
+      console.error('SAML_MISSING_ATTRIBUTES', profile);
       return done({
         name: 'SAML_MISSING_ATTRIBUTES',
         message: 'Missing profile attributes',
@@ -122,6 +121,7 @@ const samlStrategy = new Strategy(
 
       const findUser: User = {
         // personId: personId,
+        userId: typeof userId === 'string' ? userId : undefined,
         username: typeof username === 'string' ? username : undefined,
         name: `${givenName} ${surname}`,
         givenName: givenName,
@@ -191,6 +191,14 @@ class App {
         resave: false,
         saveUninitialized: false,
         store: sessionStore,
+        cookie: {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          // secure: NODE_ENV === 'production',
+          // sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+        },
       }),
     );
 
@@ -341,7 +349,7 @@ class App {
               failureRedirect.search = failMessage.toString();
               res.redirect(failureRedirect.toString());
             }
-            return res.redirect(successRedirect.toString());
+            return req.session.save(() => res.redirect(successRedirect.toString()));
           });
         }
       })(req, res, next);
