@@ -43,4 +43,14 @@ module.exports = withBundleAnalyzer({
   async rewrites() {
     return [{ source: '/napi/:path*', destination: '/api/:path*' }];
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: process.env.NEXT_PUBLIC_BASEPATH,
+        permanent: true,
+        basePath: false,
+      },
+    ];
+  },
 });
