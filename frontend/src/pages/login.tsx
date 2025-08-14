@@ -39,30 +39,24 @@ export default function Start() {
 
   useEffect(() => {
     setInitalFocus();
+
     if (!router.isReady) return;
 
     const params = new URLSearchParams(window.location.search);
-    const isLoggedOut = params.get('loggedout') === '';
-    const failMessage = params.get('failMessage');
+    const allowed = new Set(['NO_USER', 'SAML_UNKNOWN_ERROR']);
+    const key = params.get('failMessage') ?? '';
 
-    setTimeout(() => setMounted(true), 500); // to not flash the login-screen on autologin
-    if (isLoggedOut) {
-      router.push(
-        {
-          pathname: '/login',
-        },
-        '/login',
-        { shallow: true }
-      );
-    } else {
-      if (!failMessage && useAutoLogin) {
-        // autologin
-        onLogin();
-      } else if (failMessage) {
-        setErrorMessage(t(`login:errors.${failMessage}`));
-      }
+    if (allowed.has(key)) {
+      setErrorMessage(t(`login:errors.${key}`));
+    } else if (key !== '') {
+      setErrorMessage('login:errors.unknown');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setTimeout(() => setMounted(true), 500);
+
+    if (useAutoLogin) {
+      onLogin();
+    }
   }, [router.isReady]);
 
   if (!mounted) {
